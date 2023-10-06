@@ -1,4 +1,4 @@
-package ru.practicum.shareit.booking.dto;
+package ru.practicum.shareit.booking.model;
 
 import ru.practicum.shareit.booking.StatusBooking;
 import ru.practicum.shareit.item.model.Item;
@@ -6,7 +6,7 @@ import ru.practicum.shareit.user.model.User;
 
 import java.time.LocalDateTime;
 
-public class BookingDto {
+public class Booking {
 
     private long id;
     private LocalDateTime start;
@@ -14,5 +14,6 @@ public class BookingDto {
     private Item item;
     private User booker;
     private StatusBooking status;
+
 
 }
