@@ -7,7 +7,6 @@ import ru.practicum.shareit.exception.ValidateException;
 import ru.practicum.shareit.dto.AdvanceInfo;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.exception.UserAlreadyExistsException;
-import ru.practicum.shareit.user.exception.UserNotFoundException;
 import ru.practicum.shareit.user.mapper.UserMapper;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;

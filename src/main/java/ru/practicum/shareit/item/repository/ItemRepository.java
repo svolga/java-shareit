@@ -4,7 +4,6 @@ import ru.practicum.shareit.exception.ValidateException;
 import ru.practicum.shareit.item.model.Item;
 
 import java.util.List;
-import java.util.Optional;
 
 public interface ItemRepository<T extends Item> {
 
