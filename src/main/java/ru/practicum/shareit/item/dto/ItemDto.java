@@ -19,5 +19,5 @@ public class ItemDto {
     @NotNull(message = "Available не может быть пустым", groups = {AdvanceInfo.class})
     @AssertTrue(groups = {AdvanceInfo.class})
     private Boolean available;
-    private long request;
+    private Long request;
 }

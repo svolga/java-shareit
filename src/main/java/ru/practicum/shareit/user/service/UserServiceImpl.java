@@ -19,11 +19,12 @@ import java.util.Optional;
 @RequiredArgsConstructor
 @Slf4j
 @Service
-public class UserService {
+public class UserServiceImpl implements UserService {
 
     private long itemId;
     private final UserRepository<User> userRepository;
 
+    @Override
     public User create(@Valid UserDto userDto) {
         ValidateDto.validate(userDto, AdvanceInfo.class);
         User user = UserMapper.toUser(userDto);
@@ -37,10 +38,11 @@ public class UserService {
         return userRepository.create(user);
     }
 
-    public User update(long userId, @Valid UserDto userDto) throws ValidateException {
-        User user = userRepository.findById(userId);
+    @Override
+    public User update(@Valid UserDto userDto) throws ValidateException {
+        User user = userRepository.findById(userDto.getId());
 
-        Optional<User> userByEmail = userRepository.findByEmailAndExcludeId(userDto.getEmail(), userId);
+        Optional<User> userByEmail = userRepository.findByEmailAndExcludeId(userDto.getEmail(), userDto.getId());
         if (userByEmail.isPresent()) {
             throw new UserAlreadyExistsException("Пользователь с email = " + userDto.getEmail() + " уже существует");
         }
@@ -49,14 +51,17 @@ public class UserService {
         return userRepository.update(user);
     }
 
+    @Override
     public User findById(long userId) {
         return userRepository.findById(userId);
     }
 
+    @Override
     public void removeById(long userId) {
         userRepository.remove(userId);
     }
 
+    @Override
     public List<User> findAll() {
         return userRepository.getAll();
     }

@@ -38,17 +38,18 @@ public class UserController {
     @PatchMapping("/{userId}")
     public UserDto update(@PathVariable long userId, @Valid @RequestBody UserDto userDto) throws ValidateException {
         log.info("Изменить пользователя с id --> {}", userId);
-        return UserMapper.toUserDto(userService.update(userId, userDto));
+        userDto.setId(userId);
+        return UserMapper.toUserDto(userService.update(userDto));
     }
 
     @GetMapping("/{userId}")
-    public UserDto findUser(@PathVariable long userId) throws Throwable {
+    public UserDto findUser(@PathVariable long userId) {
         log.info("Найти пользователя с id --> {}", userId);
         return UserMapper.toUserDto(userService.findById(userId));
     }
 
     @DeleteMapping("/{userId}")
-    public void removeUserById(@PathVariable long userId) throws Throwable {
+    public void removeUserById(@PathVariable long userId) {
         log.info("Удалить пользователя с id --> {}", userId);
         userService.removeById(userId);
     }

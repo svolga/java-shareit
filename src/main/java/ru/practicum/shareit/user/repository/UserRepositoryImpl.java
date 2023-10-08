@@ -13,7 +13,7 @@ import java.util.Optional;
 @Repository
 public class UserRepositoryImpl implements UserRepository<User> {
 
-    Map<Long, User> users = new HashMap<>();
+    private final Map<Long, User> users = new HashMap<>();
 
     @Override
     public User create(User user) {
