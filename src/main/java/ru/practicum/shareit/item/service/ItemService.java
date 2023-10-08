@@ -9,10 +9,16 @@ import java.util.List;
 
 public interface ItemService {
     ItemDto create(long userId, @Valid ItemDto itemDto);
+
     Item findById(long itemId);
+
     ItemDto findItemById(long itemId);
+
     ItemDto update(long userId, @Valid ItemDto itemDto) throws ValidateException;
+
     void removeById(long itemId);
+
     List<ItemDto> findAll(long userId);
+
     List<ItemDto> findByText(String text);
 }

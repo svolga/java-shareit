@@ -9,8 +9,12 @@ import java.util.List;
 
 public interface UserService {
     User create(@Valid UserDto userDto);
+
     User update(@Valid UserDto userDto) throws ValidateException;
+
     User findById(long userId);
+
     void removeById(long userId);
+
     List<User> findAll();
 }
