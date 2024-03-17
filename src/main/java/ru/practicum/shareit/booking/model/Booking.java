@@ -33,6 +33,7 @@ import java.util.Objects;
 @ToString
 public class Booking {
 
+    @Column(nullable = false)
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
