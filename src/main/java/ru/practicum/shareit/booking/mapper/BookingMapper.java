@@ -9,7 +9,6 @@ import ru.practicum.shareit.user.mapper.UserMapper;
 public class BookingMapper {
 
     public static BookingOutDto toBookingOutDto(Booking booking) {
-
         return BookingOutDto.builder()
                 .id(booking.getId())
                 .start(booking.getStart())
@@ -37,5 +36,4 @@ public class BookingMapper {
                 .end(bookingDto.getEnd())
                 .build();
     }
-    
 }
