@@ -4,6 +4,8 @@ import lombok.Builder;
 import lombok.Data;
 import ru.practicum.shareit.booking.model.StatusBooking;
 import ru.practicum.shareit.dto.AdvanceInfo;
+import ru.practicum.shareit.item.dto.ItemDto;
+import ru.practicum.shareit.user.dto.UserDto;
 
 import javax.validation.constraints.Future;
 import javax.validation.constraints.FutureOrPresent;
@@ -12,11 +14,12 @@ import java.time.LocalDateTime;
 
 @Data
 @Builder
-public class BookingDto {
+public class BookingOutDto {
+
     private long id;
 
-    private long itemId;
-    private long bookerId;
+    private ItemDto item;
+    private UserDto booker;
 
     @NotNull(message = "Дата start не может быть null", groups = {AdvanceInfo.class})
     @FutureOrPresent(message = "Значение не может быть в прошлом")
@@ -31,4 +34,5 @@ public class BookingDto {
     public Boolean validate() {
         return start.isBefore(end);
     }
+
 }
