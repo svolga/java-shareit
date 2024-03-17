@@ -33,8 +33,7 @@ public class UserServiceImpl implements UserService {
         User user = UserMapper.toUser(userDto);
         try {
             return userRepository.save(user);
-        }
-        catch (DataAccessException ex){
+        } catch (DataAccessException ex) {
             log.info("Exception при создании USer --> {}", ex.getMessage());
             throw ex;
         }

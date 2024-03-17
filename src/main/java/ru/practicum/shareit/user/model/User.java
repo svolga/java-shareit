@@ -19,7 +19,9 @@ import java.util.Objects;
 
 @Entity
 @Table(name = "users", schema = "public")
-@Getter @Setter @ToString
+@Getter
+@Setter
+@ToString
 @Validated
 @Builder
 @AllArgsConstructor
