@@ -2,10 +2,8 @@ package ru.practicum.shareit.booking.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.model.User;
 
@@ -13,58 +11,53 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
-import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import javax.persistence.Id;
+import javax.validation.constraints.Future;
+import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
-import java.util.Objects;
 
-@Entity
+@Data
 @Table(name = "bookings")
+@Entity
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Getter
-@Setter
-@ToString
-public class Booking {
+public class Booking implements Comparable<Booking> {
 
-    @Column(nullable = false)
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long Id;
 
-    @Column(name = "start_date", nullable = false)
-    private LocalDateTime start;
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
 
-    @Column(name = "end_date", nullable = true)
-    private LocalDateTime end;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "item_id", referencedColumnName = "id")
+    @OneToOne
+    @JoinColumn(name = "item_id")
     private Item item;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "booker_id", referencedColumnName = "id")
-    private User booker;
+    @Column(name = "start_time")
+    @NotNull
+    @Future
+    private LocalDateTime start;
 
-    @Enumerated(EnumType.STRING)
-    private StatusBooking status;
+    @Column(name = "end_time")
+    @NotNull
+    @Future
+    private LocalDateTime end;
+
+    @Column(name = "status")
+    @Enumerated(EnumType.ORDINAL)
+    private StatusBooking statusBooking;
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Booking)) return false;
-        Booking booking = (Booking) o;
-        return getId() == booking.getId();
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(getId());
+    public int compareTo(Booking booking) {
+        return booking.getEnd().compareTo(this.end);
     }
 }

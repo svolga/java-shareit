@@ -1,53 +1,32 @@
 package ru.practicum.shareit.user.model;
 
-import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
-import org.springframework.validation.annotation.Validated;
+import lombok.AllArgsConstructor;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotBlank;
-import java.util.Objects;
 
+@Data
 @Entity
-@Table(name = "users", schema = "public")
-@Getter
-@Setter
-@ToString
-@Validated
-@Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
+@Table(name = "users")
 public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long userId;
 
+    @Column
     private String name;
 
-    @Email(message = "Электронная почта должна содержать символ @")
-    @NotBlank(message = "Электронная почта не может быть пустой")
+    @Column(name = "email", nullable = false, unique = true)
     private String email;
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof User)) return false;
-        User user = (User) o;
-        return Objects.equals(getId(), user.getId());
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(getId());
-    }
 }

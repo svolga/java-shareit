@@ -1,27 +1,24 @@
 package ru.practicum.shareit.item.service;
 
-import ru.practicum.shareit.exception.ValidateException;
 import ru.practicum.shareit.item.dto.CommentDto;
+import ru.practicum.shareit.item.dto.ItemBookingDto;
 import ru.practicum.shareit.item.dto.ItemDto;
-import ru.practicum.shareit.item.model.Item;
 
-import javax.validation.Valid;
 import java.util.List;
 
 public interface ItemService {
-    ItemDto create(long userId, @Valid ItemDto itemDto);
 
-    Item findById(long itemId);
+    ItemBookingDto getItemById(Long id, Long userId);
 
-    ItemDto findItemById(long userId, long itemId);
+    List<ItemBookingDto> getItemsByUser(Long userId);
 
-    ItemDto update(long userId, @Valid ItemDto itemDto) throws ValidateException;
+    ItemDto update(ItemDto item, Long userId, Long itemId);
 
-    void removeById(long itemId);
+    ItemDto create(ItemDto item, Long userId);
 
-    List<ItemDto> findAll(long userId);
+    void remove(Long itemId, Long userId);
 
-    List<ItemDto> findByText(long userId, String text);
+    List<ItemDto> findByText(String text);
 
-    CommentDto addComment(long userId, long itemId, CommentDto commentDto);
+    CommentDto addComment(CommentDto comment, Long userId, Long itemId);
 }

@@ -1,30 +1,25 @@
 package ru.practicum.shareit.item.dto;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
-import ru.practicum.shareit.booking.dto.BookingDto;
-import ru.practicum.shareit.dto.AdvanceInfo;
-import ru.practicum.shareit.user.model.User;
+import lombok.Getter;
+import lombok.Setter;
+import ru.practicum.shareit.user.dto.UserDto;
 
-import javax.validation.constraints.AssertTrue;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-import java.util.List;
 
-@Data
+@Getter
+@Setter
 @Builder
+@AllArgsConstructor
 public class ItemDto {
-    private long id;
-    @NotBlank(message = "Название не может быть пустым", groups = {AdvanceInfo.class})
+    private Long id;
+    private UserDto user;
+    @NotBlank
     private String name;
-    @NotBlank(message = "Description не может быть пустым", groups = {AdvanceInfo.class})
+    @NotBlank
     private String description;
-    @NotNull(message = "Available не может быть пустым", groups = {AdvanceInfo.class})
-    @AssertTrue(groups = {AdvanceInfo.class})
+    @NotNull
     private Boolean available;
-
-    private User owner;
-    private BookingDto lastBooking;
-    private BookingDto nextBooking;
-    private List<CommentDto> comments;
 }
