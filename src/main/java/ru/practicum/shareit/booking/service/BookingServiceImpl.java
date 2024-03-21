@@ -5,7 +5,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.dto.BookingDto;
-import ru.practicum.shareit.booking.exception.*;
+import ru.practicum.shareit.booking.dto.BookingMapper;
+import ru.practicum.shareit.booking.exception.BookingAlreadyApprovedException;
+import ru.practicum.shareit.booking.exception.BookingCreationException;
+import ru.practicum.shareit.booking.exception.BookingNotFoundException;
+import ru.practicum.shareit.booking.exception.BookingStartEndTimeException;
+import ru.practicum.shareit.booking.exception.NotValidStateException;
+import ru.practicum.shareit.booking.exception.UnsupportedStateException;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.StateBooking;
 import ru.practicum.shareit.booking.model.StatusBooking;
@@ -22,9 +28,6 @@ import ru.practicum.shareit.user.repository.UserRepository;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
-
-import static ru.practicum.shareit.booking.dto.BookingMapper.toBooking;
-import static ru.practicum.shareit.booking.dto.BookingMapper.toDto;
 
 @Service
 @RequiredArgsConstructor
@@ -57,10 +60,10 @@ public class BookingServiceImpl implements BookingService {
             throw new BookingStartEndTimeException(bookingDto.getStart(), bookingDto.getEnd());
         }
 
-        Booking booking = bookingRepository.save(toBooking(bookingDto, user, item));
+        Booking booking = bookingRepository.save(BookingMapper.toBooking(bookingDto, user, item));
         log.info("Saved: " + booking);
 
-        return toDto(booking);
+        return BookingMapper.toDto(booking);
     }
 
     @Override
@@ -76,7 +79,7 @@ public class BookingServiceImpl implements BookingService {
         bookingRepository.deleteById(bookingId);
         log.info("Booking with id: " + bookingId + " removed");
 
-        return toDto(booking);
+        return BookingMapper.toDto(booking);
     }
 
     @Override
@@ -90,7 +93,7 @@ public class BookingServiceImpl implements BookingService {
         }
 
         log.info("Найден booking: " + booking);
-        return toDto(booking);
+        return BookingMapper.toDto(booking);
     }
 
     @Override
@@ -116,7 +119,7 @@ public class BookingServiceImpl implements BookingService {
         bookingRepository.save(booking);
         log.info("Статус изменен на --> {}, для bookingId --> {}", approved, bookingId);
 
-        return toDto(booking);
+        return BookingMapper.toDto(booking);
     }
 
     @Override
@@ -151,7 +154,7 @@ public class BookingServiceImpl implements BookingService {
             default:
                 throw new NotValidStateException(state);
         }
-        return toDto(bookings);
+        return BookingMapper.toDto(bookings);
     }
 
     @Override
@@ -186,7 +189,7 @@ public class BookingServiceImpl implements BookingService {
             default:
                 throw new NotValidStateException(state);
         }
-        return toDto(bookings);
+        return BookingMapper.toDto(bookings);
     }
 
     private StateBooking findStateBooking(String state) {

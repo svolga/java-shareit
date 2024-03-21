@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.practicum.shareit.user.dto.UserDtoMapper;
+import ru.practicum.shareit.user.dto.UserMapper;
 import ru.practicum.shareit.user.exception.UserNotFoundException;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.model.User;
@@ -13,7 +13,6 @@ import ru.practicum.shareit.user.repository.UserRepository;
 import javax.validation.Valid;
 import java.util.List;
 
-import static ru.practicum.shareit.user.dto.UserDtoMapper.toDto;
 
 @Service
 @RequiredArgsConstructor
@@ -29,7 +28,7 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(() -> new UserNotFoundException(id));
 
         log.info("Найден User --> {}", user);
-        return UserDtoMapper.toDto(user);
+        return UserMapper.toDto(user);
     }
 
     @Override
@@ -37,17 +36,17 @@ public class UserServiceImpl implements UserService {
     public List<UserDto> getUsers() {
         List<User> users = userRepository.findAll();
         log.info("Найдены users --> {}", users);
-        return toDto(users);
+        return UserMapper.toDto(users);
     }
 
     @Override
     @Transactional
     public UserDto create(@Valid UserDto userDto) {
 
-        User user = UserDtoMapper.toUser(userDto);
+        User user = UserMapper.toUser(userDto);
         User savedUser = userRepository.save(user);
         log.info("Создан пользователь: {} ", savedUser);
-        return UserDtoMapper.toDto(savedUser);
+        return UserMapper.toDto(savedUser);
     }
 
     @Override
@@ -59,20 +58,20 @@ public class UserServiceImpl implements UserService {
         update(user, userDto);
         userRepository.save(user);
         log.info("Обновлен User с userId --> {} ", userId);
-        return toDto(user);
+        return UserMapper.toDto(user);
     }
 
     @Override
     @Transactional
     public void remove(Long userId) {
-        User user = userRepository.findById(userId)
+        userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException(userId));
 
         userRepository.deleteById(userId);
         log.info("Удален User с userId --> {} ", userId);
     }
 
-    private User update(User user, UserDto userDto) {
+    private void update(User user, UserDto userDto) {
         if (userDto.getEmail() != null) {
             user.setEmail(userDto.getEmail());
         }
@@ -81,6 +80,5 @@ public class UserServiceImpl implements UserService {
             user.setName(userDto.getName());
         }
 
-        return user;
     }
 }

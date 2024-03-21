@@ -12,6 +12,7 @@ import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.CommentMapper;
 import ru.practicum.shareit.item.dto.ItemBookingDto;
 import ru.practicum.shareit.item.dto.ItemDto;
+import ru.practicum.shareit.item.dto.ItemMapper;
 import ru.practicum.shareit.item.exception.CommentCreationException;
 import ru.practicum.shareit.item.exception.ItemNotFoundException;
 import ru.practicum.shareit.item.exception.ItemNotOwnerException;
@@ -24,12 +25,9 @@ import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
-import static ru.practicum.shareit.item.dto.ItemMapper.toDto;
-import static ru.practicum.shareit.item.dto.ItemMapper.toItem;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -62,10 +60,10 @@ public class ItemServiceImpl implements ItemService {
                     .max(Booking::compareTo)
                     .orElse(null);
 
-            itemDto = toDto(item, lastBooking == null ? null : BookingMapper.toDto(lastBooking),
+            itemDto = ItemMapper.toDto(item, lastBooking == null ? null : BookingMapper.toDto(lastBooking),
                     nextBooking == null ? null : BookingMapper.toDto(nextBooking), comments);
         } else {
-            itemDto = toDto(item, null, null, comments);
+            itemDto = ItemMapper.toDto(item, null, null, comments);
         }
 
         log.info("Найден item --> {}", item);
@@ -76,15 +74,11 @@ public class ItemServiceImpl implements ItemService {
     @Transactional(readOnly = true)
     public List<ItemBookingDto> getItemsByUser(Long userId) {
         List<Item> items = itemRepository.findAllByUserUserId(userId);
-        List<ItemBookingDto> itemDtos = new ArrayList<>();
-
-        for (Item item : items) {
-            itemDtos.add(getItemById(item.getItemId(), userId));
-        }
 
         log.info("Найдены items --> {}", items);
-
-        return itemDtos;
+        return items.stream()
+                .map(item -> getItemById(item.getItemId(), userId))
+                .collect(Collectors.toUnmodifiableList());
     }
 
     @Override
@@ -97,12 +91,12 @@ public class ItemServiceImpl implements ItemService {
                 .orElseThrow(() -> new UserNotFoundException(userId));
 
         checkOwner(user, item);
-        item = update(item, itemDto);
+        update(item, itemDto);
         itemDto.setId(itemId);
         itemRepository.save(item);
         log.info("Обновлен Item с itemId -->{}", itemId);
 
-        return toDto(item);
+        return ItemMapper.toDto(item);
     }
 
     @Override
@@ -111,10 +105,10 @@ public class ItemServiceImpl implements ItemService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException(userId));
 
-        Item savedItem = itemRepository.save(toItem(item, user));
+        Item savedItem = itemRepository.save(ItemMapper.toItem(item, user));
         log.info("Создан Item с itemId --> {}", savedItem.getItemId());
 
-        return toDto(savedItem);
+        return ItemMapper.toDto(savedItem);
     }
 
     @Override
@@ -144,8 +138,7 @@ public class ItemServiceImpl implements ItemService {
                 .findAllByAvailableAndDescriptionContainingIgnoreCaseOrNameContainingIgnoreCase(true, text, text);
 
         log.info("Найдены Items --> {}", items);
-
-        return toDto(items);
+        return ItemMapper.toDto(items);
     }
 
     @Override
@@ -182,7 +175,7 @@ public class ItemServiceImpl implements ItemService {
         }
     }
 
-    private Item update(Item item, ItemDto itemDto) {
+    private void update(Item item, ItemDto itemDto) {
 
         if (itemDto.getName() != null) {
             item.setName(itemDto.getName());
@@ -196,6 +189,5 @@ public class ItemServiceImpl implements ItemService {
             item.setAvailable(itemDto.getAvailable());
         }
 
-        return item;
     }
 }
