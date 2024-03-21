@@ -4,7 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
 import ru.practicum.shareit.user.model.User;
 
 import javax.persistence.Column;
@@ -14,40 +13,27 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
 import javax.persistence.Table;
-import javax.validation.constraints.NotBlank;
 import java.time.LocalDateTime;
 
-@Data
 @Entity
+@Data
+@Builder(toBuilder = true)
 @Table(name = "comments")
-@Builder
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 public class Comment {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long commentId;
-
-    @ManyToOne
-    @JoinColumn(name = "userId")
-    @ToString.Exclude
-    private User author;
-
-    @Column
-    private Integer rating;
-
-    @Column
-    @NotBlank
+    @Column(name = "id", nullable = false)
+    private Long id;
+    @Column(name = "text", nullable = false)
     private String text;
-
-    @Column(name = "created_at")
-    private LocalDateTime createdAt;
-
-    @OneToOne
-    @JoinColumn(name = "itemId")
-    @ToString.Exclude
+    @ManyToOne
+    @JoinColumn(name = "author", referencedColumnName = "id", nullable = false)
+    private User author;
+    @ManyToOne
+    @JoinColumn(name = "item", referencedColumnName = "id", nullable = false)
     private Item item;
+    private LocalDateTime created;
 }

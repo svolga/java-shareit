@@ -11,17 +11,12 @@ import javax.validation.constraints.NotNull;
 @Value
 @Builder(toBuilder = true)
 @RequiredArgsConstructor
-public class ItemDto {
-
+public class CommentRequestDto {
     Long id;
     @NotNull(groups = {Create.class})
     @NotBlank(groups = {Create.class})
-    String name;
-    @NotNull(groups = {Create.class})
-    @NotBlank(groups = {Create.class})
-    String description;
-    @NotNull(groups = {Create.class})
-    Boolean available;
-    Long requestId;
+    String text;
+    String authorName;
+    Long itemId;
 
 }

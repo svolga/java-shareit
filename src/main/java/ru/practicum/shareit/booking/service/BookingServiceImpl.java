@@ -3,30 +3,27 @@ package ru.practicum.shareit.booking.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import ru.practicum.shareit.booking.dto.BookingDto;
-import ru.practicum.shareit.booking.dto.BookingMapper;
-import ru.practicum.shareit.booking.exception.BookingAlreadyApprovedException;
-import ru.practicum.shareit.booking.exception.BookingCreationException;
-import ru.practicum.shareit.booking.exception.BookingNotFoundException;
-import ru.practicum.shareit.booking.exception.BookingStartEndTimeException;
-import ru.practicum.shareit.booking.exception.NotValidStateException;
-import ru.practicum.shareit.booking.exception.UnsupportedStateException;
+import ru.practicum.shareit.booking.dto.BookingRequestDto;
+import ru.practicum.shareit.booking.dto.BookingResponseDto;
+import ru.practicum.shareit.booking.model.BookingState;
+import ru.practicum.shareit.booking.mapper.BookingMapper;
 import ru.practicum.shareit.booking.model.Booking;
-import ru.practicum.shareit.booking.model.StateBooking;
-import ru.practicum.shareit.booking.model.StatusBooking;
-import ru.practicum.shareit.booking.repostitory.BookingRepository;
-import ru.practicum.shareit.item.exception.ItemNotAvailableException;
-import ru.practicum.shareit.item.exception.ItemNotFoundException;
-import ru.practicum.shareit.item.exception.ItemNotOwnerException;
+import ru.practicum.shareit.booking.model.BookingStatus;
+import ru.practicum.shareit.booking.repository.BookingJpaRepository;
 import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.item.repository.ItemRepository;
-import ru.practicum.shareit.user.exception.UserNotFoundException;
+import ru.practicum.shareit.item.repository.ItemJpaRepository;
 import ru.practicum.shareit.user.model.User;
-import ru.practicum.shareit.user.repository.UserRepository;
+import ru.practicum.shareit.user.repository.UserJpaRepository;
+
+
+import org.springframework.transaction.annotation.Transactional;
+import ru.practicum.shareit.util.exceptions.AccessIsNotAllowedException;
+import ru.practicum.shareit.util.exceptions.DateTimeException;
+import ru.practicum.shareit.util.exceptions.ObjectNotFoundException;
+import ru.practicum.shareit.util.exceptions.UnavailableItemException;
+import ru.practicum.shareit.util.exceptions.UnsupportedStatusException;
 
 import java.time.LocalDateTime;
-import java.util.Arrays;
 import java.util.List;
 
 @Service
@@ -34,169 +31,220 @@ import java.util.List;
 @Slf4j
 public class BookingServiceImpl implements BookingService {
 
-    private final BookingRepository bookingRepository;
-    private final ItemRepository itemRepository;
-    private final UserRepository userRepository;
+    private final BookingJpaRepository bookingJpaRepository;
+    private final ItemJpaRepository itemJpaRepository;
+    private final UserJpaRepository userJpaRepository;
 
     @Override
     @Transactional
-    public BookingDto create(BookingDto bookingDto, Long userId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new UserNotFoundException(userId));
-        Item item = itemRepository.findById(bookingDto.getItemId())
-                .orElseThrow(() -> new ItemNotFoundException(bookingDto.getItemId()));
+    public BookingResponseDto create(Long userId, BookingRequestDto bookingRequestDto) {
 
-        if (item.getUser() != null) {
-            if (item.getUser().getUserId().equals(userId)) {
-                throw new BookingCreationException(userId, item.getItemId());
-            }
-        }
+        checkValidDateAndTime(bookingRequestDto.getStart(), bookingRequestDto.getEnd());
+        Item item = getItemByIdIfExists(bookingRequestDto.getItemId());
+        checkIsItemAvailable(item);
+        User owner = getUserByIdIfExists(userId);
+        checkAccessForOwnerNotAllowed(item, userId);
 
-        if (item.getAvailable().equals(false)) {
-            throw new ItemNotAvailableException(item.getItemId());
-        }
-
-        if (bookingDto.getStart().isAfter(bookingDto.getEnd()) || bookingDto.getStart().isEqual(bookingDto.getEnd())) {
-            throw new BookingStartEndTimeException(bookingDto.getStart(), bookingDto.getEnd());
-        }
-
-        Booking booking = bookingRepository.save(BookingMapper.toBooking(bookingDto, user, item));
-        log.info("Saved: " + booking);
-
-        return BookingMapper.toDto(booking);
-    }
-
-    @Override
-    @Transactional
-    public BookingDto remove(Long bookingId, Long userId) {
-        Booking booking = bookingRepository.findById(bookingId)
-                .orElseThrow(() -> new BookingNotFoundException(bookingId));
-
-        if (!booking.getUser().getUserId().equals(userId)) {
-            throw new ItemNotOwnerException(userId, bookingId);
-        }
-
-        bookingRepository.deleteById(bookingId);
-        log.info("Booking with id: " + bookingId + " removed");
-
-        return BookingMapper.toDto(booking);
+        Booking booking = BookingMapper.toBooking(bookingRequestDto, owner, item,
+                BookingStatus.WAITING);
+        Booking savedBbooking = bookingJpaRepository.save(booking);
+        log.info("Создан booking --> {}", savedBbooking);
+        return BookingMapper.toBookingResponseDto(savedBbooking);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public BookingDto getBookingById(Long userId, Long bookingId) {
-        Booking booking = bookingRepository.findById(bookingId)
-                .orElseThrow(() -> new BookingNotFoundException(bookingId));
+    public BookingResponseDto getById(Long userId, Long bookingId) {
+        Booking booking = getBookingByIdIfExists(bookingId);
+        checkAccessAllowedOnlyForOwnerOrBooker(booking, userId);
 
-        if (!(booking.getItem().getUser().getUserId().equals(userId) || booking.getUser().getUserId().equals(userId))) {
-            throw new BookingNotFoundException("User для userId: " + userId + " без доступа для bookingId: " + bookingId);
-        }
-
-        log.info("Найден booking: " + booking);
-        return BookingMapper.toDto(booking);
+        BookingResponseDto bookingResponseDto = BookingMapper.toBookingResponseDto(booking);
+        log.info("Получить booking --> {} для User --> {}", bookingResponseDto, userId);
+        return bookingResponseDto;
     }
 
     @Override
     @Transactional
-    public BookingDto updateApprovedStatus(Long userId, Long bookingId, String approved) {
-        Booking booking = bookingRepository.findById(bookingId)
-                .orElseThrow(() -> new BookingNotFoundException(bookingId));
+    public BookingResponseDto updateStatus(Long bookingId, Long userId, Boolean isApprovedBookingStatus) {
+        checkIfUserExists(userId);
+        Booking booking = getBookingByIdIfExists(bookingId);
+        checkAccessAllowedOnlyForOwner(booking.getItem(), userId);
+        checkStatusIsWaiting(booking);
 
-        if (booking.getStatusBooking().equals(StatusBooking.APPROVED)) {
-            throw new BookingAlreadyApprovedException(bookingId);
-        }
+        BookingStatus status = resolveStatus(isApprovedBookingStatus);
+        Booking updated = booking.toBuilder().status(status).build();
+        bookingJpaRepository.save(updated);
 
-        if (!booking.getItem().getUser().getUserId().equals(userId)) {
-            throw new ItemNotOwnerException(userId, booking.getItem().getItemId());
-        }
+        BookingResponseDto bookingResponseDto = BookingMapper.toBookingResponseDto(updated);
 
-        if (approved.equals("true")) {
-            booking.setStatusBooking(StatusBooking.APPROVED);
-        } else {
-            booking.setStatusBooking(StatusBooking.REJECTED);
-        }
-
-        bookingRepository.save(booking);
-        log.info("Статус изменен на --> {}, для bookingId --> {}", approved, bookingId);
-
-        return BookingMapper.toDto(booking);
+        log.info("Для Booking --> {} изменен статус --> {}", bookingResponseDto, status);
+        return bookingResponseDto;
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<BookingDto> getBookingByCurrentUser(Long userId, String state) {
+    public List<BookingResponseDto> getListByOwner(Long ownerId, String state) {
 
-        StateBooking stateBooking = findStateBooking(state);
+        checkIfUserExists(ownerId);
+        BookingState validState = findBookingState(state);
         LocalDateTime now = LocalDateTime.now();
-        List<Booking> bookings;
-        userRepository.findById(userId)
-                .orElseThrow(() -> new UserNotFoundException(userId));
+        List<Booking> listByOwner;
 
-        switch (stateBooking) {
+        switch (validState) {
             case ALL:
-                bookings = bookingRepository.findAllByUserUserIdOrderByEndDesc(userId);
+                listByOwner = bookingJpaRepository.findAllByItem_Owner_IdOrderByStartDesc(ownerId);
                 break;
             case CURRENT:
-                bookings = bookingRepository.findAllByUserUserIdAndStartIsBeforeAndEndIsAfterOrderByEndDesc(userId, now, now);
+                listByOwner = bookingJpaRepository
+                        .findAllByItem_Owner_IdAndStartIsBeforeAndEndIsAfterOrderByStartDesc(ownerId, now, now);
                 break;
             case PAST:
-                bookings = bookingRepository.findAllByUserUserIdAndEndIsBeforeOrderByEndDesc(userId, now);
+                listByOwner = bookingJpaRepository.findAllByItem_Owner_IdAndEndIsBeforeOrderByStartDesc(ownerId, now);
                 break;
             case FUTURE:
-                bookings = bookingRepository.findAllByUserUserIdAndStartIsAfterOrderByEndDesc(userId, now);
-                break;
-            case WAITING:
-                bookings = bookingRepository.findAllByUserUserIdAndStartIsAfterAndStatusBookingOrderByEndDesc(userId, now, StatusBooking.valueOf(state));
+                listByOwner = bookingJpaRepository.findAllByItem_Owner_IdAndStartIsAfterOrderByStartDesc(ownerId, now);
                 break;
             case REJECTED:
-                bookings = bookingRepository.findAllByUserUserIdAndStatusBookingOrderByEndDesc(userId, StatusBooking.valueOf(state));
+                List<BookingStatus> notApprovedStatus = List.of(BookingStatus.REJECTED, BookingStatus.CANCELED);
+                listByOwner = bookingJpaRepository
+                        .findAllByItem_Owner_IdAndStatusInOrderByStartDesc(ownerId, notApprovedStatus);
+                break;
+            case WAITING:
+                listByOwner = bookingJpaRepository
+                        .findAllByItem_Owner_IdAndStatusOrderByStartDesc(ownerId,
+                                BookingStatus.valueOf("WAITING"));
                 break;
             default:
-                throw new NotValidStateException(state);
+                throw new UnsupportedStatusException("Unknown state: UNSUPPORTED_STATUS");
         }
-        return BookingMapper.toDto(bookings);
+
+        return BookingMapper.toBookingResponseDtoList(listByOwner);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<BookingDto> getBookingByOwner(Long userId, String state) {
-        StateBooking stateBooking = findStateBooking(state);
+    public List<BookingResponseDto> getListByBooker(Long bookerId, String state) {
+
+        checkIfUserExists(bookerId);
+        BookingState validState = findBookingState(state);
         LocalDateTime now = LocalDateTime.now();
+        List<Booking> listByBooker;
 
-        List<Booking> bookings;
-        userRepository.findById(userId)
-                .orElseThrow(() -> new UserNotFoundException(userId));
-
-        switch (stateBooking) {
+        switch (validState) {
             case ALL:
-                bookings = bookingRepository.findAllBookingByOwnerUserId(userId);
+                listByBooker = bookingJpaRepository.findAllByBookerIdOrderByStartDesc(bookerId);
                 break;
             case CURRENT:
-                bookings = bookingRepository.findAllByItemUserUserIdAndStartIsBeforeAndEndIsAfterOrderByEndDesc(userId, now, now);
+                listByBooker = bookingJpaRepository
+                        .findAllByBookerIdAndStartIsBeforeAndEndIsAfterOrderByStartDesc(bookerId, now, now);
                 break;
             case PAST:
-                bookings = bookingRepository.findAllByItemUserUserIdAndEndIsBeforeOrderByEndDesc(userId, now);
+                listByBooker = bookingJpaRepository.findAllByBookerIdAndEndIsBeforeOrderByStartDesc(bookerId, now);
                 break;
             case FUTURE:
-                bookings = bookingRepository.findAllByItemUserUserIdAndStartIsAfterOrderByEndDesc(userId, now);
-                break;
-            case WAITING:
-                bookings = bookingRepository.findAllByItemUserUserIdAndStartIsAfterAndStatusBookingOrderByEndDesc(userId, now, StatusBooking.valueOf(state));
+                listByBooker = bookingJpaRepository.findAllByBookerIdAndStartIsAfterOrderByStartDesc(bookerId, now);
                 break;
             case REJECTED:
-                bookings = bookingRepository.findAllByItemUserUserIdAndStatusBookingOrderByEndDesc(userId, StatusBooking.valueOf(state));
+                List<BookingStatus> notApprovedStatus = List.of(BookingStatus.REJECTED, BookingStatus.CANCELED);
+                listByBooker = bookingJpaRepository
+                        .findAllByBookerIdAndStatusInOrderByStartDesc(bookerId, notApprovedStatus);
+                break;
+            case WAITING:
+                listByBooker = bookingJpaRepository
+                        .findAllByBookerIdAndStatusOrderByStartDesc(bookerId, BookingStatus.valueOf("WAITING"));
                 break;
             default:
-                throw new NotValidStateException(state);
+                throw new UnsupportedStatusException("Unknown state: UNSUPPORTED_STATUS");
         }
-        return BookingMapper.toDto(bookings);
+        return BookingMapper.toBookingResponseDtoList(listByBooker);
+
     }
 
-    private StateBooking findStateBooking(String state) {
-        return Arrays.stream(StateBooking.values())
-                .filter(stateBooking -> stateBooking.name().equals(state))
-                .findFirst()
-                .orElseThrow(() -> new UnsupportedStateException(state));
+    private BookingStatus resolveStatus(Boolean isApproved) {
+        return isApproved.equals(true) ? BookingStatus.APPROVED : BookingStatus.REJECTED;
     }
 
+    private void checkValidDateAndTime(LocalDateTime start, LocalDateTime end) {
+        if (start.equals(end) || start.isAfter(end)) {
+            throw new DateTimeException("Неверные даты начала и/или конца бронирования");
+        }
+    }
+
+    private Item getItemByIdIfExists(Long itemId) {
+        return itemJpaRepository.findById(itemId)
+                .orElseThrow(() ->
+                        new ObjectNotFoundException(String.format("Не найден Item с itemId = %d", itemId)));
+    }
+
+
+    private Booking getBookingByIdIfExists(Long bookingId) {
+        return bookingJpaRepository.findById(bookingId)
+                .orElseThrow(() ->
+                        new ObjectNotFoundException(String.format("Не найден Booking для bookingId =  %d", bookingId)));
+    }
+
+    private User getUserByIdIfExists(Long userId) {
+        return userJpaRepository.findById(userId)
+                .orElseThrow(() ->
+                        new ObjectNotFoundException(String.format("Пользователя с id %d не существует", userId)));
+    }
+
+
+    private void checkIfUserExists(Long userId) {
+        if (!userJpaRepository.existsById(userId)) {
+            throw new ObjectNotFoundException(String.format("Не найден User с userId: %d", userId));
+        }
+    }
+
+    private void checkAccessForOwnerNotAllowed(Item item, Long userId) {
+        if (isOwner(item, userId)) {
+            throw new AccessIsNotAllowedException(
+                    "Item не найден, owner не может бронировать свой Item");
+        }
+    }
+
+    private void checkAccessAllowedOnlyForOwner(Item item, Long userId) {
+
+        if (!isOwner(item, userId)) {
+            throw new AccessIsNotAllowedException(
+                    (String.format("Операция доступна только владельцу Item %s :", item)));
+        }
+    }
+
+    private void checkAccessAllowedOnlyForOwnerOrBooker(Booking booking, Long userId) {
+        if (!isOwner(booking.getItem(), userId) && !isBooker(booking, userId)) {
+            throw new AccessIsNotAllowedException(
+                    (String.format("Получить информацию о Booking для bookingId = %d. "
+                            + "может только владелец Booking, либо владелец Item", booking.getId())));
+        }
+    }
+
+    private boolean isOwner(Item item, Long userId) {
+        return item.getOwner().getId().equals(userId);
+    }
+    private boolean isBooker(Booking booking, Long userId) {
+        return booking.getBooker().getId().equals(userId);
+    }
+
+    private BookingState findBookingState(String bookingState) {
+        try {
+            return BookingState.valueOf(bookingState);
+        } catch (IllegalArgumentException exception) {
+            throw new UnsupportedStatusException("Unknown state: UNSUPPORTED_STATUS");
+        }
+    }
+
+    private void checkIsItemAvailable(Item item) {
+        if (!item.getAvailable()) {
+            throw new UnavailableItemException("В настоящий момент вещь недоступна для бронирования.");
+        }
+    }
+
+    private void checkStatusIsWaiting(Booking booking) {
+        if (!booking.getStatus().equals(BookingStatus.WAITING)) {
+            throw new UnavailableItemException(String.format("Вы не можете изменить ранее подтвержденный статус %s",
+                    booking.getStatus()));
+        }
+    }
 }
+

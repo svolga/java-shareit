@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import ru.practicum.shareit.request.ItemRequest;
 import ru.practicum.shareit.user.model.User;
 
 import javax.persistence.Column;
@@ -15,29 +16,27 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
-
 @Data
+@Builder(toBuilder = true)
 @Entity
 @Table(name = "items")
-@Builder
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 public class Item {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long itemId;
-
-    @Column
-    private String name;
-
+    @Column(name = "id", nullable = false)
+    Long id;
+    @Column(name = "name", nullable = false)
+     String name;
+    @Column(name = "description", nullable = false)
+    String description;
+    @Column(name = "available", nullable = false)
+    Boolean available;
     @ManyToOne
-    @JoinColumn(name = "user_id")
-    private User user;
-
-    @Column
-    private String description;
-
-    @Column
-    private Boolean available;
+    @JoinColumn(name = "owner", referencedColumnName = "id", nullable = false)
+    User owner;
+    @ManyToOne
+    @JoinColumn(name = "request", referencedColumnName = "id")
+    ItemRequest request;
 }

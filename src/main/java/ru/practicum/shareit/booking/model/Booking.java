@@ -13,51 +13,34 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
+import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
 import javax.persistence.Table;
-import javax.persistence.Id;
-import javax.validation.constraints.Future;
-import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
-@Data
-@Table(name = "bookings")
 @Entity
-@Builder
-@AllArgsConstructor
+@Table(name = "bookings")
+@Builder(toBuilder = true)
+@Data
 @NoArgsConstructor
-public class Booking implements Comparable<Booking> {
-
+@AllArgsConstructor
+public class Booking {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long Id;
-
-    @ManyToOne
-    @JoinColumn(name = "user_id")
-    private User user;
-
-    @OneToOne
-    @JoinColumn(name = "item_id")
-    private Item item;
-
-    @Column(name = "start_time")
-    @NotNull
-    @Future
+    @Column(name = "id", nullable = false)
+    private Long id;
+    @Column(name = "start_time", nullable = false)
     private LocalDateTime start;
-
-    @Column(name = "end_time")
-    @NotNull
-    @Future
+    @Column(name = "end_time", nullable = false)
     private LocalDateTime end;
-
+    @ManyToOne
+    @JoinColumn(name = "item", referencedColumnName = "id", nullable = false)
+    private Item item;
+    @ManyToOne
+    @JoinColumn(name = "booker", referencedColumnName = "id", nullable = false)
+    private User booker;
+    @Enumerated(EnumType.STRING)
     @Column(name = "status")
-    @Enumerated(EnumType.ORDINAL)
-    private StatusBooking statusBooking;
-
-    @Override
-    public int compareTo(Booking booking) {
-        return booking.getEnd().compareTo(this.end);
-    }
+    private BookingStatus status;
 }
