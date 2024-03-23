@@ -26,17 +26,14 @@ public class Item {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
-    Long id;
+    private Long id;
     @Column(name = "name", nullable = false)
-     String name;
+    private  String name;
     @Column(name = "description", nullable = false)
-    String description;
+    private String description;
     @Column(name = "available", nullable = false)
-    Boolean available;
+    private Boolean available;
     @ManyToOne
-    @JoinColumn(name = "owner", referencedColumnName = "id", nullable = false)
-    User owner;
-    @ManyToOne
-    @JoinColumn(name = "request", referencedColumnName = "id")
-    ItemRequest request;
+    @JoinColumn(name = "owner_id", referencedColumnName = "id", nullable = false)
+    private User owner;
 }

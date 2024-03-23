@@ -30,10 +30,10 @@ public class Comment {
     @Column(name = "text", nullable = false)
     private String text;
     @ManyToOne
-    @JoinColumn(name = "author", referencedColumnName = "id", nullable = false)
+    @JoinColumn(name = "author_id", referencedColumnName = "id", nullable = false)
     private User author;
     @ManyToOne
-    @JoinColumn(name = "item", referencedColumnName = "id", nullable = false)
+    @JoinColumn(name = "item_id", referencedColumnName = "id", nullable = false)
     private Item item;
     private LocalDateTime created;
 }

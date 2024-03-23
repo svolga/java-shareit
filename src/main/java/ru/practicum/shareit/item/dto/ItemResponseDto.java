@@ -14,17 +14,17 @@ import java.util.List;
 @Builder(toBuilder = true)
 @RequiredArgsConstructor
 public class ItemResponseDto {
-    Long id;
+    private final Long id;
     @NotNull(groups = {Create.class})
     @NotBlank(groups = {Create.class})
-    String name;
+    private final String name;
     @NotNull(groups = {Create.class})
     @NotBlank(groups = {Create.class})
-    String description;
+    private final String description;
     @NotNull(groups = {Create.class})
-    Boolean available;
-    BookingItemResponseDto lastBooking;
-    BookingItemResponseDto nextBooking;
-    Long requestId;
-    List<CommentResponseDto> comments;
+    private final Boolean available;
+    private final BookingItemResponseDto lastBooking;
+    private final BookingItemResponseDto nextBooking;
+    private final Long requestId;
+    private final List<CommentResponseDto> comments;
 }

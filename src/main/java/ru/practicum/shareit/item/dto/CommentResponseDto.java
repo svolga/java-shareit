@@ -12,11 +12,11 @@ import java.time.LocalDateTime;
 @Builder(toBuilder = true)
 @RequiredArgsConstructor
 public class CommentResponseDto {
-    Long id;
+    private final Long id;
     @NotNull
     @NotBlank
-    String text;
-    String authorName;
-    Long itemId;
-    LocalDateTime created;
+    private final String text;
+    private final String authorName;
+    private final Long itemId;
+    private final LocalDateTime created;
 }

@@ -12,11 +12,11 @@ import javax.validation.constraints.NotNull;
 @Builder(toBuilder = true)
 @RequiredArgsConstructor
 public class CommentRequestDto {
-    Long id;
+    private final Long id;
     @NotNull(groups = {Create.class})
     @NotBlank(groups = {Create.class})
-    String text;
-    String authorName;
-    Long itemId;
+    private final String text;
+    private final String authorName;
+    private final Long itemId;
 
 }

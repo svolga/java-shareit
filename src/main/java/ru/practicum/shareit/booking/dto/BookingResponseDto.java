@@ -14,13 +14,12 @@ import java.time.LocalDateTime;
 @Builder(toBuilder = true)
 @RequiredArgsConstructor
 public class BookingResponseDto {
-    Long id;
+    private final Long id;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
-    LocalDateTime start;
+    private final LocalDateTime start;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
-    LocalDateTime end;
-    BookingStatus status;
-    User booker;
-    Item item;
-
+    private final LocalDateTime end;
+    private final BookingStatus status;
+    private final User booker;
+    private final Item item;
 }

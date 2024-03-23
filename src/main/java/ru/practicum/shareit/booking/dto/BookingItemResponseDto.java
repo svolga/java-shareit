@@ -8,6 +8,6 @@ import lombok.Value;
 @Builder(toBuilder = true)
 @RequiredArgsConstructor
 public class BookingItemResponseDto {
-    Long id;
-    Long bookerId;
+    private final Long id;
+    private final Long bookerId;
 }

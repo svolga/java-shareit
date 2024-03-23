@@ -25,7 +25,7 @@ public class ItemRequest {
     private Long id;
     @Column(name = "description", nullable = false)
     private String description;
-    @Column(name = "requestor", nullable = false)
+    @Column(name = "requestor_id", nullable = false)
     private Long requestor;
     @Column(name = "created", nullable = false)
     private LocalDateTime created;

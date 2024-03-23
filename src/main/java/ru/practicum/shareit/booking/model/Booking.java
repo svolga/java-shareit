@@ -35,10 +35,10 @@ public class Booking {
     @Column(name = "end_time", nullable = false)
     private LocalDateTime end;
     @ManyToOne
-    @JoinColumn(name = "item", referencedColumnName = "id", nullable = false)
+    @JoinColumn(name = "item_id", referencedColumnName = "id", nullable = false)
     private Item item;
     @ManyToOne
-    @JoinColumn(name = "booker", referencedColumnName = "id", nullable = false)
+    @JoinColumn(name = "booker_id", referencedColumnName = "id", nullable = false)
     private User booker;
     @Enumerated(EnumType.STRING)
     @Column(name = "status")
