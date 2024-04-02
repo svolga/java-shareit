@@ -1,24 +1,21 @@
 package ru.practicum.shareit.item.service;
 
-import ru.practicum.shareit.exception.ValidateException;
+import org.springframework.stereotype.Component;
+import ru.practicum.shareit.item.dto.CommentRequestDto;
+import ru.practicum.shareit.item.dto.CommentResponseDto;
 import ru.practicum.shareit.item.dto.ItemDto;
-import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.item.dto.ItemResponseDto;
 
 import javax.validation.Valid;
 import java.util.List;
 
+@Component
 public interface ItemService {
-    ItemDto create(long userId, @Valid ItemDto itemDto);
-
-    Item findById(long itemId);
-
-    ItemDto findItemById(long itemId);
-
-    ItemDto update(long userId, @Valid ItemDto itemDto) throws ValidateException;
-
-    void removeById(long itemId);
-
-    List<ItemDto> findAll(long userId);
-
-    List<ItemDto> findByText(String text);
+    ItemDto create(Long userId, @Valid ItemDto itemDto);
+    ItemResponseDto getById(Long userId, Long itemId);
+    ItemDto update(Long userId, ItemDto itemDto, Long itemId);
+    void deleteById(Long itemId);
+    List<ItemResponseDto> getListByUser(Long userId);
+    List<ItemResponseDto> searchItemsBySubstring(String text);
+    CommentResponseDto addComment(CommentRequestDto commentRequestDto, Long userId, Long itemId);
 }

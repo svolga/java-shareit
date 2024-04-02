@@ -1,19 +1,27 @@
 package ru.practicum.shareit.user.dto;
 
 import lombok.Builder;
-import lombok.Data;
-import ru.practicum.shareit.dto.AdvanceInfo;
+import lombok.RequiredArgsConstructor;
+import lombok.Value;
+import ru.practicum.shareit.util.groups.Create;
+import ru.practicum.shareit.util.groups.Update;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
-@Data
-@Builder
+@Value
+@Builder(toBuilder = true)
+@RequiredArgsConstructor
 public class UserDto {
-    private long id;
-    private String name;
+    private final Long id;
+    @NotNull(groups = {Create.class})
+    @NotBlank(groups = {Create.class})
+    private final String name;
+    @NotNull(groups = {Create.class})
+    @NotBlank(groups = {Create.class})
+    @Email(groups = {Create.class, Update.class})
+    private final String email;
 
-    @Email(message = "Электронная почта должна содержать символ @", groups = {AdvanceInfo.class})
-    @NotBlank(message = "Электронная почта не может быть пустой", groups = {AdvanceInfo.class})
-    private String email;
 }
+

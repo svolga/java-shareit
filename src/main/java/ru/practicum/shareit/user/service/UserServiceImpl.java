@@ -3,71 +3,106 @@ package ru.practicum.shareit.user.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import ru.practicum.shareit.exception.ValidateException;
-import ru.practicum.shareit.dto.AdvanceInfo;
+import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.user.dto.UserDto;
-import ru.practicum.shareit.user.exception.UserAlreadyExistsException;
 import ru.practicum.shareit.user.mapper.UserMapper;
 import ru.practicum.shareit.user.model.User;
-import ru.practicum.shareit.user.repository.UserRepository;
-import ru.practicum.shareit.validator.ValidateDto;
+import ru.practicum.shareit.user.repository.UserJpaRepository;
+import ru.practicum.shareit.util.Validation;
+import ru.practicum.shareit.util.exceptions.EmailAlreadyExistsException;
+import ru.practicum.shareit.util.exceptions.ObjectNotFoundException;
 
-import javax.validation.Valid;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
+@Service
 @RequiredArgsConstructor
 @Slf4j
-@Service
 public class UserServiceImpl implements UserService {
 
-    private long itemId;
-    private final UserRepository<User> userRepository;
+    private final UserJpaRepository userJpaRepository;
 
     @Override
-    public User create(@Valid UserDto userDto) {
-        ValidateDto.validate(userDto, AdvanceInfo.class);
+    public UserDto create(UserDto userDto) {
         User user = UserMapper.toUser(userDto);
+        User savedUser = userJpaRepository.save(user);
+        log.info("Создан user --> {} ", savedUser);
+        return UserMapper.toUserDto(savedUser);
+    }
 
-        Optional<User> optionalUser = userRepository.findByEmail(user.getEmail());
-        if (optionalUser.isPresent()) {
-            throw new UserAlreadyExistsException("Пользователь с email = " + user.getEmail() + " уже существует");
+    @Override
+    public UserDto getById(Long userId) {
+        User user = getUserByIdIfExists(userId);
+        log.info("Найден user --> {} для userId --> {}", user, userId);
+        return UserMapper.toUserDto(user);
+    }
+
+    @Override
+    @Transactional
+    public UserDto update(UserDto userDto, Long userId) {
+        User user = updateValidFields(userDto, userId);
+        userJpaRepository.save(user);
+        log.info("Изменен user --> {} для userId --> {}", user, user.getId());
+        return UserMapper.toUserDto(user);
+    }
+
+    @Override
+    @Transactional
+    public void deleteById(Long userId) {
+        if (userJpaRepository.existsById(userId)) {
+            log.info("Удален user для userId --> {}", userId);
+            userJpaRepository.deleteById(userId);
         }
-
-        user.setId(getNewId());
-        return userRepository.create(user);
+        log.info("Не найден user для userId --> {} не найден", userId);
     }
 
     @Override
-    public User update(@Valid UserDto userDto) throws ValidateException {
-        User user = userRepository.findById(userDto.getId());
+    @Transactional(readOnly = true)
+    public List<UserDto> findAll() {
+        List<User> users = userJpaRepository.findAll();
+        List<UserDto> usersDto = UserMapper.toUserDtoList(users);
+        writeToLog(usersDto);
+        return usersDto;
+    }
 
-        Optional<User> userByEmail = userRepository.findByEmailAndExcludeId(userDto.getEmail(), userDto.getId());
-        if (userByEmail.isPresent()) {
-            throw new UserAlreadyExistsException("Пользователь с email = " + userDto.getEmail() + " уже существует");
+    private User updateValidFields(UserDto userDto, Long userId) {
+
+        User user = getUserByIdIfExists(userId);
+        String newEmail = userDto.getEmail();
+        String newName = userDto.getName();
+        if (Validation.stringIsNotNullOrBlank(newEmail) && Validation.validEmail(newEmail)) {
+            checkEmailExists(newEmail, userId);
+            user = user.toBuilder().email(userDto.getEmail()).build();
         }
-
-        user = UserMapper.toUser(userDto, user);
-        return userRepository.update(user);
+        if (Validation.stringIsNotNullOrBlank(newName)) {
+            user = user.toBuilder().name(newName).build();
+        }
+        return user;
     }
 
-    @Override
-    public User findById(long userId) {
-        return userRepository.findById(userId);
+    private void checkEmailExists(String email, Long userId) {
+
+        Optional<User> userWithSameEmail = userJpaRepository.findAll().stream()
+                .filter(user -> user.getEmail().equals(email) && !user.getId().equals(userId))
+                .findAny();
+
+        if (userWithSameEmail.isPresent()) {
+            log.info("Email {} уже есть в БД --> {}", email);
+            throw new EmailAlreadyExistsException(String.format("Email %s уже зарегистрирован в базе.", email));
+        }
     }
 
-    @Override
-    public void removeById(long userId) {
-        userRepository.remove(userId);
+    private User getUserByIdIfExists(Long userId) {
+        return userJpaRepository.findById(userId)
+                .orElseThrow(() ->
+                        new ObjectNotFoundException(String.format("Пользователя с id %d не существует", userId)));
     }
 
-    @Override
-    public List<User> findAll() {
-        return userRepository.getAll();
+    private void writeToLog(List<UserDto> users) {
+        String result = users.stream()
+                .map(UserDto::toString)
+                .collect(Collectors.joining(", "));
+        log.info("Найден список пользователей {}", result);
     }
-
-    private long getNewId() {
-        return ++itemId;
-    }
-
 }
