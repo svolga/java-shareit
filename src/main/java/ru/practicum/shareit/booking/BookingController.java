@@ -19,6 +19,8 @@ import ru.practicum.shareit.util.groups.Create;
 import ru.practicum.shareit.util.groups.Update;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Positive;
+import javax.validation.constraints.PositiveOrZero;
 import java.util.List;
 
 @RestController
@@ -53,21 +55,33 @@ public class BookingController {
     }
 
     @GetMapping("owner")
-    public List<BookingResponseDto> getListByOwner(@RequestHeader("X-Sharer-User-Id") Long userId,
-                                                   @RequestParam(value = "state",
-                                                           defaultValue = "ALL") String state) {
-        log.info("GET-запрос: список Bookings для userId владельца: id {}, статус Booking: {}",
-                userId, state);
-        return bookingService.getListByOwner(userId, state);
+    public List<BookingResponseDto> getListByOwner(
+            @RequestHeader("X-Sharer-User-Id") Long userId,
+            @RequestParam(value = "state", defaultValue = "ALL") String state,
+            @PositiveOrZero @RequestParam(
+                    name = "from", defaultValue = "0") Integer from,
+            @Positive @RequestParam(
+                    name = "size", defaultValue = "10") Integer size
+    ) {
+        log.info("GET-запрос: список Bookings для userId владельца: id --> {}, статус Booking --> {}, " +
+                        "from --> {}, size --> {} ",
+                userId, state, from, size);
+        return bookingService.getListByOwner(userId, state, from, size);
     }
 
     @GetMapping()
-    public List<BookingResponseDto> getListByBooker(@RequestHeader("X-Sharer-User-Id") Long userId,
-                                                    @RequestParam(value = "state",
-                                                            defaultValue = "ALL") String state) {
-        log.info("GET-запрос: получить список Bookings для userId {}, статус брони: {}",
-                userId, state);
-        return bookingService.getListByBooker(userId, state);
+    public List<BookingResponseDto> getListByBooker(
+            @RequestHeader("X-Sharer-User-Id") Long userId,
+            @RequestParam(value = "state", defaultValue = "ALL") String state,
+            @PositiveOrZero @RequestParam(
+                    name = "from", defaultValue = "0") Integer from,
+            @Positive @RequestParam(
+                    name = "size", defaultValue = "10") Integer size
+    ) {
+        log.info("GET-запрос: получить список Bookings для userId --> {}, статус брони --> {}, " +
+                        "from --> {}, size --> {}",
+                userId, state, from, size);
+        return bookingService.getListByBooker(userId, state, from, size);
     }
 
 }

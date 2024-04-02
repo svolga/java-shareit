@@ -19,6 +19,8 @@ import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.repository.CommentJpaRepository;
 import ru.practicum.shareit.item.repository.ItemJpaRepository;
+import ru.practicum.shareit.request.model.ItemRequest;
+import ru.practicum.shareit.request.repository.ItemRequestRepository;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserJpaRepository;
 import ru.practicum.shareit.util.Validation;
@@ -42,13 +44,14 @@ public class ItemServiceImpl implements ItemService {
     private final ItemJpaRepository itemJpaRepository;
     private final BookingJpaRepository bookingJpaRepository;
     private final CommentJpaRepository commentJpaRepository;
+    private final ItemRequestRepository itemRequestRepository;
 
     @Override
     @Transactional
     public ItemDto create(Long userId, @Valid ItemDto itemDto) {
         User owner = getUserByIdIfExists(userId);
-
-        Item item = ItemMapper.toItem(itemDto, owner, null);
+        ItemRequest itemRequest = getItemRequestIfExists(itemDto);
+        Item item = ItemMapper.toItem(itemDto, owner, itemRequest);
         Item savedItem = itemJpaRepository.save(item);
         log.info("Создан Item: {}", savedItem);
         return ItemMapper.toItemDto(savedItem);
@@ -141,7 +144,7 @@ public class ItemServiceImpl implements ItemService {
         checkAccessToCommentAllowed(userId, itemId);
 
         Comment comment = CommentMapper.toComment(commentRequestDto, user, item);
-        commentJpaRepository.save(comment);
+        comment = commentJpaRepository.save(comment);
         log.info("Для вещи c id {} пользователь id {} добавил новый отзыв: {}", itemId, userId, comment);
         return CommentMapper.toCommentResponseDto(comment);
     }
@@ -206,7 +209,6 @@ public class ItemServiceImpl implements ItemService {
         }
     }
 
-
     private boolean isOwner(Item item, Long userId) {
         return item.getOwner().getId().equals(userId);
     }
@@ -255,5 +257,15 @@ public class ItemServiceImpl implements ItemService {
     private List<CommentResponseDto> getCommentsByItemId(Long itemId) {
         List<Comment> comments = commentJpaRepository.findAllByItemId(itemId);
         return CommentMapper.toCommentResponseDtoList(comments);
+    }
+
+    private ItemRequest getItemRequestIfExists(ItemDto itemDto) {
+        if (itemDto.getRequestId() == null) {
+            return null;
+        }
+        Long requestId = itemDto.getRequestId();
+        return itemRequestRepository.findById(requestId)
+                .orElseThrow(() ->
+                        new ObjectNotFoundException(String.format("Не найден запрос с requestId %d", requestId)));
     }
 }

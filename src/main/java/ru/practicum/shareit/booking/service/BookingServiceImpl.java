@@ -2,6 +2,8 @@ package ru.practicum.shareit.booking.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.dto.BookingRequestDto;
 import ru.practicum.shareit.booking.dto.BookingResponseDto;
@@ -83,36 +85,41 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<BookingResponseDto> getListByOwner(Long ownerId, String state) {
+    public List<BookingResponseDto> getListByOwner(Long ownerId, String state, Integer from, Integer size) {
 
         checkIfUserExists(ownerId);
         BookingState validState = findBookingState(state);
         LocalDateTime now = LocalDateTime.now();
         List<Booking> listByOwner;
+        int page = from / size;
+        Pageable pageRequest = PageRequest.of(page, size);
 
         switch (validState) {
             case ALL:
-                listByOwner = bookingJpaRepository.findAllByItem_Owner_IdOrderByStartDesc(ownerId);
+                listByOwner = bookingJpaRepository.findAllByItem_Owner_IdOrderByStartDesc(ownerId, pageRequest);
                 break;
             case CURRENT:
                 listByOwner = bookingJpaRepository
-                        .findAllByItem_Owner_IdAndStartIsBeforeAndEndIsAfterOrderByStartDesc(ownerId, now, now);
+                        .findAllByItem_Owner_IdAndStartIsBeforeAndEndIsAfterOrderByStartDesc(
+                                ownerId, now, now, pageRequest);
                 break;
             case PAST:
-                listByOwner = bookingJpaRepository.findAllByItem_Owner_IdAndEndIsBeforeOrderByStartDesc(ownerId, now);
+                listByOwner = bookingJpaRepository.findAllByItem_Owner_IdAndEndIsBeforeOrderByStartDesc(
+                        ownerId, now, pageRequest);
                 break;
             case FUTURE:
-                listByOwner = bookingJpaRepository.findAllByItem_Owner_IdAndStartIsAfterOrderByStartDesc(ownerId, now);
+                listByOwner = bookingJpaRepository.findAllByItem_Owner_IdAndStartIsAfterOrderByStartDesc(
+                        ownerId, now, pageRequest);
                 break;
             case REJECTED:
                 List<BookingStatus> notApprovedStatus = List.of(BookingStatus.REJECTED, BookingStatus.CANCELED);
                 listByOwner = bookingJpaRepository
-                        .findAllByItem_Owner_IdAndStatusInOrderByStartDesc(ownerId, notApprovedStatus);
+                        .findAllByItem_Owner_IdAndStatusInOrderByStartDesc(ownerId, notApprovedStatus, pageRequest);
                 break;
             case WAITING:
                 listByOwner = bookingJpaRepository
                         .findAllByItem_Owner_IdAndStatusOrderByStartDesc(ownerId,
-                                BookingStatus.valueOf("WAITING"));
+                                BookingStatus.valueOf("WAITING"), pageRequest);
                 break;
             default:
                 throw new UnsupportedStatusException("Unknown state: UNSUPPORTED_STATUS");
@@ -123,35 +130,40 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<BookingResponseDto> getListByBooker(Long bookerId, String state) {
+    public List<BookingResponseDto> getListByBooker(Long bookerId, String state, Integer from, Integer size) {
 
         checkIfUserExists(bookerId);
         BookingState validState = findBookingState(state);
         LocalDateTime now = LocalDateTime.now();
         List<Booking> listByBooker;
+        int page = from / size;
+        Pageable pageRequest = PageRequest.of(page, size);
 
         switch (validState) {
             case ALL:
-                listByBooker = bookingJpaRepository.findAllByBookerIdOrderByStartDesc(bookerId);
+                listByBooker = bookingJpaRepository.findAllByBookerIdOrderByStartDesc(bookerId, pageRequest);
                 break;
             case CURRENT:
                 listByBooker = bookingJpaRepository
-                        .findAllByBookerIdAndStartIsBeforeAndEndIsAfterOrderByStartDesc(bookerId, now, now);
+                        .findAllByBookerIdAndStartIsBeforeAndEndIsAfterOrderByStartDesc(bookerId, now, now, pageRequest);
                 break;
             case PAST:
-                listByBooker = bookingJpaRepository.findAllByBookerIdAndEndIsBeforeOrderByStartDesc(bookerId, now);
+                listByBooker = bookingJpaRepository.findAllByBookerIdAndEndIsBeforeOrderByStartDesc(
+                        bookerId, now, pageRequest);
                 break;
             case FUTURE:
-                listByBooker = bookingJpaRepository.findAllByBookerIdAndStartIsAfterOrderByStartDesc(bookerId, now);
+                listByBooker = bookingJpaRepository.findAllByBookerIdAndStartIsAfterOrderByStartDesc(
+                        bookerId, now, pageRequest);
                 break;
             case REJECTED:
                 List<BookingStatus> notApprovedStatus = List.of(BookingStatus.REJECTED, BookingStatus.CANCELED);
                 listByBooker = bookingJpaRepository
-                        .findAllByBookerIdAndStatusInOrderByStartDesc(bookerId, notApprovedStatus);
+                        .findAllByBookerIdAndStatusInOrderByStartDesc(bookerId, notApprovedStatus, pageRequest);
                 break;
             case WAITING:
                 listByBooker = bookingJpaRepository
-                        .findAllByBookerIdAndStatusOrderByStartDesc(bookerId, BookingStatus.valueOf("WAITING"));
+                        .findAllByBookerIdAndStatusOrderByStartDesc(
+                                bookerId, BookingStatus.valueOf("WAITING"), pageRequest);
                 break;
             default:
                 throw new UnsupportedStatusException("Unknown state: UNSUPPORTED_STATUS");
@@ -222,6 +234,7 @@ public class BookingServiceImpl implements BookingService {
     private boolean isOwner(Item item, Long userId) {
         return item.getOwner().getId().equals(userId);
     }
+
     private boolean isBooker(Booking booking, Long userId) {
         return booking.getBooker().getId().equals(userId);
     }

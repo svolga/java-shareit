@@ -21,4 +21,5 @@ public class ItemDto {
     private final String description;
     @NotNull(groups = {Create.class})
     private final Boolean available;
+    private final Long requestId;
 }
