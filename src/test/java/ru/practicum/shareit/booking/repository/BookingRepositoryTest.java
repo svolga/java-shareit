@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.test.annotation.DirtiesContext;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.BookingStatus;
@@ -27,27 +28,27 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public class BookingRepositoryTest {
     @Autowired
-    BookingJpaRepository bookingRepository;
+    private BookingJpaRepository bookingRepository;
     @Autowired
-    UserJpaRepository userRepository;
+    private UserJpaRepository userRepository;
     @Autowired
-    ItemJpaRepository itemRepository;
-    User owner;
-    Long ownerId;
-    Long bookerId;
-    Long itemId;
-    User booker;
-    Item item;
-    Booking waiting;
-    Booking approved;
-    Booking rejected;
-    Booking current;
-    Booking past;
-    Pageable page;
+    private ItemJpaRepository itemRepository;
+    private User owner;
+    private Long ownerId;
+    private Long bookerId;
+    private Long itemId;
+    private User booker;
+    private Item item;
+    private Booking waiting;
+    private Booking approved;
+    private Booking rejected;
+    private Booking current;
+    private Booking past;
+    private Pageable page;
 
     @BeforeEach
     public void beforeEach() {
-        page = PageRequest.of(0, 10);
+        page = PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "start"));
 
         owner = User.builder().name("CustomerName").email("CustomerName@yandex.ru").build();
         owner = userRepository.save(owner);
@@ -100,7 +101,7 @@ public class BookingRepositoryTest {
     public void findAllByItem_Owner_IdOrderByStartDesc() {
 
         List<Booking> result = bookingRepository
-                .findAllByItem_Owner_IdOrderByStartDesc(ownerId, page);
+                .findAllByItem_Owner_Id(ownerId, page);
 
         AssertionsForClassTypes.assertThat(result).asList()
                 .hasSize(5)
@@ -118,7 +119,7 @@ public class BookingRepositoryTest {
 
         LocalDateTime now = LocalDateTime.now();
         List<Booking> result = bookingRepository
-                .findAllByItem_Owner_IdAndEndIsBeforeOrderByStartDesc(ownerId, now, page);
+                .findAllByItem_Owner_IdAndEndIsBefore(ownerId, now, page);
 
         AssertionsForClassTypes.assertThat(result).asList()
                 .hasSize(1)
@@ -132,7 +133,7 @@ public class BookingRepositoryTest {
     public void findAllByItem_Owner_IdAndStartIsBeforeAndEndIsAfterOrderByStartDesc() {
         LocalDateTime now = LocalDateTime.now();
         List<Booking> result = bookingRepository
-                .findAllByItem_Owner_IdAndStartIsBeforeAndEndIsAfterOrderByStartDesc(ownerId, now, now, page);
+                .findAllByItem_Owner_IdAndStartIsBeforeAndEndIsAfter(ownerId, now, now, page);
 
         AssertionsForClassTypes.assertThat(result).asList()
                 .hasSize(1)
@@ -147,7 +148,7 @@ public class BookingRepositoryTest {
 
         LocalDateTime now = LocalDateTime.now();
         List<Booking> result = bookingRepository
-                .findAllByItem_Owner_IdAndStartIsAfterOrderByStartDesc(ownerId, now, page);
+                .findAllByItem_Owner_IdAndStartIsAfter(ownerId, now, page);
 
         AssertionsForClassTypes.assertThat(result).asList()
                 .hasSize(3)
@@ -163,7 +164,7 @@ public class BookingRepositoryTest {
 
         List<BookingStatus> notApprovedStatus = List.of(BookingStatus.REJECTED, BookingStatus.CANCELED);
         List<Booking> result = bookingRepository
-                .findAllByItem_Owner_IdAndStatusInOrderByStartDesc(ownerId, notApprovedStatus, page);
+                .findAllByItem_Owner_IdAndStatusIn(ownerId, notApprovedStatus, page);
 
         AssertionsForClassTypes.assertThat(result).asList()
                 .hasSize(1)
@@ -176,7 +177,7 @@ public class BookingRepositoryTest {
     @Test
    public void findAllByItem_Owner_IdAndStatusOrderByStartDesc() {
         List<Booking> result = bookingRepository
-                .findAllByItem_Owner_IdAndStatusOrderByStartDesc(ownerId, BookingStatus.WAITING, page);
+                .findAllByItem_Owner_IdAndStatus(ownerId, BookingStatus.WAITING, page);
 
         AssertionsForClassTypes.assertThat(result).asList()
                 .hasSize(1)
@@ -192,7 +193,7 @@ public class BookingRepositoryTest {
         public   void findAllByBookerIdOrderByStartDesc() {
 
         List<Booking> result = bookingRepository
-                .findAllByBookerIdOrderByStartDesc(bookerId, page);
+                .findAllByBookerId(bookerId, page);
 
         AssertionsForClassTypes.assertThat(result).asList()
                 .hasSize(5)
@@ -208,7 +209,7 @@ public class BookingRepositoryTest {
 
         LocalDateTime now = LocalDateTime.now();
         List<Booking> result = bookingRepository
-                .findAllByBookerIdAndStartIsBeforeAndEndIsAfterOrderByStartDesc(bookerId, now, now, page);
+                .findAllByBookerIdAndStartIsBeforeAndEndIsAfter(bookerId, now, now, page);
 
         AssertionsForClassTypes.assertThat(result).asList()
                 .hasSize(1)
@@ -224,7 +225,7 @@ public class BookingRepositoryTest {
 
         LocalDateTime now = LocalDateTime.now();
         List<Booking> result = bookingRepository
-                .findAllByBookerIdAndStartIsAfterOrderByStartDesc(bookerId, now, page);
+                .findAllByBookerIdAndStartIsAfter(bookerId, now, page);
 
         AssertionsForClassTypes.assertThat(result).asList()
                 .hasSize(3)
@@ -241,7 +242,7 @@ public class BookingRepositoryTest {
         LocalDateTime now = LocalDateTime.now();
 
         List<Booking> result = bookingRepository
-                .findAllByBookerIdAndEndIsBeforeOrderByStartDesc(bookerId, now, page);
+                .findAllByBookerIdAndEndIsBefore(bookerId, now, page);
 
         AssertionsForClassTypes.assertThat(result).asList()
                 .hasSize(1)
@@ -255,7 +256,7 @@ public class BookingRepositoryTest {
 
         List<BookingStatus> notApprovedStatus = List.of(BookingStatus.REJECTED, BookingStatus.CANCELED);
         List<Booking> result = bookingRepository
-                .findAllByBookerIdAndStatusInOrderByStartDesc(bookerId, notApprovedStatus, page);
+                .findAllByBookerIdAndStatusIn(bookerId, notApprovedStatus, page);
 
         AssertionsForClassTypes.assertThat(result).asList()
                 .hasSize(1)
@@ -268,7 +269,7 @@ public class BookingRepositoryTest {
     public void findAllByBookerIdAndStatusOrderByStartDesc() {
 
         List<Booking> result = bookingRepository
-                .findAllByBookerIdAndStatusOrderByStartDesc(bookerId, BookingStatus.WAITING, page);
+                .findAllByBookerIdAndStatus(bookerId, BookingStatus.WAITING, page);
 
         AssertionsForClassTypes.assertThat(result).asList()
                 .hasSize(1)

@@ -8,7 +8,6 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.annotation.DirtiesContext;
 import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.request.model.ItemRequest;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserJpaRepository;
 
@@ -21,44 +20,40 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public class CommentRepositoryTest {
     @Autowired
-    UserJpaRepository userRepository;
+    private UserJpaRepository userRepository;
     @Autowired
-    ItemJpaRepository itemRepository;
+    private ItemJpaRepository itemRepository;
     @Autowired
-    CommentJpaRepository commentRepository;
-    User owner;
-    Long ownerId;
-    User booker;
-    Long bookerId;
-    Item item1;
-    Long item1Id;
-    Item item2;
-    ItemRequest item1Request;
-    ItemRequest item2Request;
-    Comment comment1ToItem1;
-    Comment comment2ToItem1;
-    Comment comment1ToItem2;
+    private CommentJpaRepository commentRepository;
+    private Item item1;
+    private Long item1Id;
+    private Item item2;
+    private Comment comment1ToItem1;
+    private Comment comment2ToItem1;
+    private Comment comment1ToItem2;
+
+    public CommentRepositoryTest() {
+    }
 
     @BeforeEach
     public void beforeEach() {
-        owner = User.builder()
+        User owner = User.builder()
                 .name("CustomerName")
                 .email("CustomerName@yandex.ru")
                 .build();
         owner = userRepository.save(owner);
-        ownerId = owner.getId();
-        booker = User.builder()
+
+        User booker = User.builder()
                 .name("Alex")
                 .email("Alex@yandex.ru")
                 .build();
         booker = userRepository.save(booker);
-        bookerId = booker.getId();
+
         item1 = Item.builder()
                 .name("bike")
                 .description("old")
                 .available(true)
                 .owner(owner)
-                .request(item1Request)
                 .build();
         item1 = itemRepository.save(item1);
         item1Id = item1.getId();
@@ -67,7 +62,6 @@ public class CommentRepositoryTest {
                 .description("nEw")
                 .available(true)
                 .owner(owner)
-                .request(item2Request)
                 .build();
         item2 = itemRepository.save(item2);
         comment1ToItem1 = Comment.builder()

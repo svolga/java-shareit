@@ -9,6 +9,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.mapper.ItemMapper;
 import ru.practicum.shareit.item.model.Item;
@@ -41,15 +42,15 @@ import static org.mockito.Mockito.when;
 public class ItemRequestServiceImplTest {
 
     @InjectMocks
-    ItemRequestServiceImpl itemRequestService;
+    private ItemRequestServiceImpl itemRequestService;
     @Mock
-    UserJpaRepository userRepository;
+    private UserJpaRepository userRepository;
     @Mock
-    ItemJpaRepository itemRepository;
+    private ItemJpaRepository itemRepository;
     @Mock
-    ItemRequestRepository itemRequestRepository;
+    private ItemRequestRepository itemRequestRepository;
     @Captor
-    ArgumentCaptor<ItemRequest> requestCaptor;
+    private ArgumentCaptor<ItemRequest> requestCaptor;
 
     @Test
     public void create_whenUserFound_thenInvokeSave_constructAndReturnResult() {
@@ -532,11 +533,11 @@ public class ItemRequestServiceImplTest {
         int from = 10;
         int size = 10;
 
-        PageRequest page = PageRequest.of(from / size, size);
+        PageRequest page = PageRequest.of(from / size, size, Sort.by(Sort.Direction.DESC, "created"));
 
         //mock repository answers
         when(userRepository.existsById(ownerId)).thenReturn(true);
-        when(itemRequestRepository.findAllByRequesterIdIsNotOrderByCreatedDesc(ownerId, page))
+        when(itemRequestRepository.findAllByRequesterIdIsNot(ownerId, page))
                 .thenReturn(itemRequests);
         when(itemRepository.findAllByRequestIn(itemRequests)).thenReturn(allItems);
 
@@ -546,7 +547,7 @@ public class ItemRequestServiceImplTest {
         //verify invoke
         InOrder inOrder = inOrder(userRepository, itemRequestRepository, itemRepository);
         inOrder.verify(userRepository).existsById(ownerId);
-        inOrder.verify(itemRequestRepository).findAllByRequesterIdIsNotOrderByCreatedDesc(ownerId, page);
+        inOrder.verify(itemRequestRepository).findAllByRequesterIdIsNot(ownerId, page);
         inOrder.verify(itemRepository).findAllByRequestIn(itemRequests);
 
         //check result

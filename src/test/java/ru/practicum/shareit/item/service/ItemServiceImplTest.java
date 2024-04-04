@@ -63,7 +63,6 @@ public class ItemServiceImplTest {
     @Mock
     private CommentJpaRepository commentRepository;
 
-
     @Test
     public void create_whenUserExists_whenRequestIdIsNull_InvokeSave_AndReturnSavedItem() {
         Long ownerId = 1L;

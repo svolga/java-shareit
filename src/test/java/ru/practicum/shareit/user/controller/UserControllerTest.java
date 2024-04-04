@@ -44,10 +44,9 @@ public class UserControllerTest {
     @MockBean
     private UserService userService;
 
-    Long userId;
-    MediaType jsonType;
-
-
+    private Long userId;
+    private MediaType jsonType;
+    
     @BeforeEach
     public void before() {
         userId = 1L;

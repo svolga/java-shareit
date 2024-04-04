@@ -1,10 +1,21 @@
 package ru.practicum.shareit.util.errors;
 
+import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.Value;
 
 @Value
-@RequiredArgsConstructor
 public class ErrorResponse {
     String error;
+    String stacktrace;
+
+    public ErrorResponse(String error) {
+        this.error = error;
+        stacktrace = "";
+    }
+
+    public ErrorResponse(String error, String stacktrace) {
+        this.error = error;
+        this.stacktrace = stacktrace;
+    }
 }

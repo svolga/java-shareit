@@ -53,9 +53,9 @@ public class BookingControllerTest {
     @MockBean
     private BookingService bookingService;
 
-    String header;
-    MediaType jsonType;
-    Long userId;
+    private String header;
+    private MediaType jsonType;
+    private Long userId;
 
     @BeforeEach
     void before() {

@@ -50,13 +50,11 @@ public class ItemControllerTest {
     @MockBean
     private ItemService itemService;
 
-    Long itemId;
-    Long userId;
-    Long requestId;
-    Long commentId;
-    String header;
-    MediaType jsonType;
-
+    private Long itemId;
+    private Long userId;
+    private Long requestId;
+    private String header;
+    private MediaType jsonType;
 
     @BeforeEach
     @SneakyThrows
@@ -198,7 +196,7 @@ public class ItemControllerTest {
 
     @Test
     @SneakyThrows
-    public void create_whenItemHasNullDescription_wtatusIsBadRequest_doesNotInvokeService() {
+    public void create_whenItemHasNullDescription_statusIsBadRequest_doesNotInvokeService() {
 
         //create Item with null description
         ItemDto invalidItem = ItemDto.builder()
@@ -484,7 +482,6 @@ public class ItemControllerTest {
 
         //create comment with valid fields
         CommentRequestDto comment = CommentRequestDto.builder()
-                .id(commentId)
                 .text("commentText")
                 .authorName("CustomerName")
                 .itemId(itemId)
@@ -524,7 +521,6 @@ public class ItemControllerTest {
 
         String emptyText = "";
         CommentRequestDto invalidComment = CommentRequestDto.builder()
-                .id(commentId)
                 .text(emptyText)
                 .authorName("CustomerName")
                 .itemId(itemId)
@@ -553,7 +549,6 @@ public class ItemControllerTest {
 
         //create invalidCommentDto object with null text
         CommentRequestDto invalidComment = CommentRequestDto.builder()
-                .id(commentId)
                 .text(null)
                 .authorName("CustomerName")
                 .itemId(itemId)

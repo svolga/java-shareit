@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.test.annotation.DirtiesContext;
 import ru.practicum.shareit.booking.repository.BookingJpaRepository;
 import ru.practicum.shareit.item.model.Item;
@@ -23,37 +24,32 @@ import java.util.List;
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public class ItemRequestRepositoryTest {
     @Autowired
-    BookingJpaRepository bookingRepository;
+    private BookingJpaRepository bookingRepository;
     @Autowired
-    UserJpaRepository userRepository;
+    private UserJpaRepository userRepository;
     @Autowired
-    ItemJpaRepository itemRepository;
+    private ItemJpaRepository itemRepository;
     @Autowired
-    ItemRequestRepository itemRequestRepository;
-    User owner;
-    Long ownerId;
-    Long requesterId;
-    Long itemFirstId;
-    Long itemSecondId;
-    User requester;
-    Item item1;
-    Item item2;
-    Pageable page;
-    Pageable pageWithSize1;
-    ItemRequest item1Request;
-    ItemRequest item2Request;
+    private ItemRequestRepository itemRequestRepository;
+    private Long ownerId;
+    private Long requesterId;
+    private Pageable page;
+    private Pageable pageWithSize1;
+    private ItemRequest item1Request;
+    private ItemRequest item2Request;
 
     @BeforeEach
     void beforeEach() {
-        page = PageRequest.of(0, 10);
-        pageWithSize1 = PageRequest.of(0,1);
-        owner = User.builder()
+        Sort sort = Sort.by(Sort.Direction.DESC, "created");
+        page = PageRequest.of(0, 10, sort);
+        pageWithSize1 = PageRequest.of(0, 1, sort);
+        User owner = User.builder()
                 .name("CustomerName")
                 .email("CustomerName@yandex.ru")
                 .build();
         owner = userRepository.save(owner);
         ownerId = owner.getId();
-        requester = User.builder()
+        User requester = User.builder()
                 .name("Alex")
                 .email("Alex@yandex.ru")
                 .build();
@@ -71,25 +67,23 @@ public class ItemRequestRepositoryTest {
                 .build();
         itemRequestRepository.save(item1Request);
         itemRequestRepository.save(item2Request);
-        item1 = Item.builder()
+        Item item1 = Item.builder()
                 .name("bike")
                 .description("new")
                 .available(true)
                 .owner(owner)
                 .request(item1Request)
                 .build();
-        item1 = itemRepository.save(item1);
-        itemFirstId = item1.getId();
-        item2 = Item.builder()
+        itemRepository.save(item1);
+
+        Item item2 = Item.builder()
                 .name("pram")
                 .description("new")
                 .available(true)
                 .owner(owner)
                 .request(item2Request)
                 .build();
-        item2 = itemRepository.save(item2);
-        itemSecondId = item2.getId();
-
+        itemRepository.save(item2);
     }
 
     @AfterEach
@@ -117,7 +111,7 @@ public class ItemRequestRepositoryTest {
     void findAllByRequesterIdIsNotOrderByCreatedDesc() {
 
         List<ItemRequest> result = itemRequestRepository
-                .findAllByRequesterIdIsNotOrderByCreatedDesc(ownerId, page);
+                .findAllByRequesterIdIsNot(ownerId, page);
 
         AssertionsForClassTypes.assertThat(result).asList()
                 .hasSize(2)
@@ -131,7 +125,7 @@ public class ItemRequestRepositoryTest {
     void findAllByRequesterIdIsNotOrderByCreatedDescOnlyOne() {
 
         List<ItemRequest> result = itemRequestRepository
-                .findAllByRequesterIdIsNotOrderByCreatedDesc(ownerId, pageWithSize1);
+                .findAllByRequesterIdIsNot(ownerId, pageWithSize1);
 
         AssertionsForClassTypes.assertThat(result).asList()
                 .hasSize(1);
@@ -142,7 +136,7 @@ public class ItemRequestRepositoryTest {
     void findAllByRequesterIdIsNotOrderByCreatedDesc_ReturnEmptyList() {
 
         List<ItemRequest> result = itemRequestRepository
-                .findAllByRequesterIdIsNotOrderByCreatedDesc(requesterId, page);
+                .findAllByRequesterIdIsNot(requesterId, page);
 
         AssertionsForClassTypes.assertThat(result).asList()
                 .hasSize(0)
@@ -151,5 +145,4 @@ public class ItemRequestRepositoryTest {
                 .isEmpty();
 
     }
-
 }

@@ -51,39 +51,39 @@ class ShareItTests {
     @Autowired
     private BookingController bookingController;
 
-    UserDto userAlex1;
-    UserDto userEgor2;
-    UserDto userAlex3;
-    UserDto userCustomerName4;
-    UserDto userAnna5;
-    UserDto userWithInvalidEmail;
-    UserDto userWithNullName;
-    UserDto userWithEmptyName;
-    UserDto userWithNullEmail;
-    ItemDto screwDriver;
-    ItemDto lawnMower;
-    ItemDto bike;
-    ItemDto noName;
-    ItemDto adultBike;
-    ItemDto nullDescription;
-    ItemDto nullAvailable;
-    ItemDto onlyAvailable;
-    ItemDto onlyDescription;
-    ItemDto onlyName;
+    private UserDto userAlex1;
+    private UserDto userEgor2;
+    private UserDto userAlex3;
+    private UserDto userCustomerName4;
+    private UserDto userAnna5;
+    private UserDto userWithInvalidEmail;
+    private UserDto userWithNullName;
+    private UserDto userWithEmptyName;
+    private UserDto userWithNullEmail;
+    private ItemDto screwDriver;
+    private ItemDto lawnMower;
+    private ItemDto bike;
+    private ItemDto noName;
+    private ItemDto adultBike;
+    private ItemDto nullDescription;
+    private ItemDto nullAvailable;
+    private ItemDto onlyAvailable;
+    private ItemDto onlyDescription;
+    private ItemDto onlyName;
 
-    BookingRequestDto bookingItem1Future;
-    BookingRequestDto bookingItem1Future2;
-    BookingRequestDto bookingItem1Future3;
-    BookingRequestDto bookingInvalidStartInPast;
-    BookingRequestDto bookingInvalidStartEqualsEnd;
-    BookingRequestDto bookingInvalidEndInPast;
-    BookingRequestDto bookingInvalidEndBeforeStart;
-    BookingRequestDto bookingItem2;
-    CommentRequestDto commentToItem1First;
-    CommentRequestDto commentToItem2;
-    CommentRequestDto commentWithEmptyText;
-    CommentRequestDto commentWithoutText;
-    Long nonExistingId;
+    private BookingRequestDto bookingItem1Future;
+    private BookingRequestDto bookingItem1Future2;
+    private BookingRequestDto bookingItem1Future3;
+    private BookingRequestDto bookingInvalidStartInPast;
+    private BookingRequestDto bookingInvalidStartEqualsEnd;
+    private BookingRequestDto bookingInvalidEndInPast;
+    private BookingRequestDto bookingInvalidEndBeforeStart;
+    private BookingRequestDto bookingItem2;
+    private CommentRequestDto commentToItem1First;
+    private CommentRequestDto commentToItem2;
+    private CommentRequestDto commentWithEmptyText;
+    private CommentRequestDto commentWithoutText;
+    private Long nonExistingId;
 
     ShareItTests() {
     }
@@ -91,7 +91,6 @@ class ShareItTests {
 
     @BeforeEach
     public void create() {
-
         userAlex1 = UserDto.builder().email("Alex@yandex.ru").name("Alexandr Ivanov").build();
         userEgor2 = UserDto.builder().email(" ").name("Egor Egorov").build();
         userAlex3 = UserDto.builder().email("Alex@yandex.ru").name("Alexey Petrov").build();

@@ -45,18 +45,16 @@ public class ItemRequestControllerTest {
     private ObjectMapper objectMapper;
     @MockBean
     private ItemRequestService itemRequestService;
-    Long itemRequestId;
-    Long itemId;
-    Long userId;
-    Long requestId;
-    String header;
-    MediaType jsonType;
+    private Long itemRequestId;
+    private Long userId;
+    private Long requestId;
+    private String header;
+    private MediaType jsonType;
 
 
     @BeforeEach
     @SneakyThrows
     void before() {
-        itemId = 1L;
         userId = 1L;
         requestId = 1L;
         itemRequestId = 1L;

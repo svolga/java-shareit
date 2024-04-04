@@ -1,37 +1,21 @@
 package ru.practicum.shareit.booking.service;
 
 import lombok.extern.slf4j.Slf4j;
-import org.hamcrest.MatcherAssert;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import ru.practicum.shareit.booking.dto.BookingRequestDto;
-import ru.practicum.shareit.booking.dto.BookingResponseDto;
-import ru.practicum.shareit.booking.mapper.BookingMapper;
-import ru.practicum.shareit.booking.model.Booking;
-import ru.practicum.shareit.booking.model.BookingStatus;
 import ru.practicum.shareit.item.dto.ItemDto;
-import ru.practicum.shareit.item.mapper.ItemMapper;
-import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.service.ItemService;
-import ru.practicum.shareit.request.dto.ItemRequestDto;
-import ru.practicum.shareit.request.dto.ItemRequestOutDto;
-import ru.practicum.shareit.request.mapper.ItemRequestMapper;
-import ru.practicum.shareit.request.model.ItemRequest;
-import ru.practicum.shareit.request.service.ItemRequestService;
 import ru.practicum.shareit.user.dto.UserDto;
-import ru.practicum.shareit.user.mapper.UserMapper;
-import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.service.UserService;
-import ru.practicum.shareit.util.exceptions.*;
+import ru.practicum.shareit.util.exceptions.AccessIsNotAllowedException;
+import ru.practicum.shareit.util.exceptions.DateTimeException;
+import ru.practicum.shareit.util.exceptions.ObjectNotFoundException;
+import ru.practicum.shareit.util.exceptions.UnsupportedStatusException;
 
 import java.time.LocalDateTime;
-import java.util.List;
-
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.hamcrest.Matchers.hasItem;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @SpringBootTest
@@ -40,14 +24,11 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 public class BookingServiceIntegrationTest {
 
     @Autowired
-    UserService userService;
+    private UserService userService;
     @Autowired
-    ItemService itemService;
+    private ItemService itemService;
     @Autowired
-    BookingService bookingService;
-    @Autowired
-    ItemRequestService itemRequestService;
-
+    private BookingService bookingService;
 
     @Test
     public void shouldFailCreateIfStartEqualsEnd() {

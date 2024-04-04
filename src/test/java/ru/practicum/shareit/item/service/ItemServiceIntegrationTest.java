@@ -33,13 +33,13 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public class ItemServiceIntegrationTest {
     @Autowired
-    UserService userService;
+    private UserService userService;
     @Autowired
-    ItemService itemService;
+    private ItemService itemService;
     @Autowired
-    BookingService bookingService;
+    private BookingService bookingService;
     @Autowired
-    ItemRequestService itemRequestService;
+    private ItemRequestService itemRequestService;
 
     @Test
     public void shouldCreateItemWithoutRequest() {

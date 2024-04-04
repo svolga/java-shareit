@@ -28,9 +28,9 @@ import static org.mockito.Mockito.when;
 @Slf4j
 public class UserServiceImplTest {
     @InjectMocks
-    UserServiceImpl userService;
+    private UserServiceImpl userService;
     @Mock
-    UserJpaRepository userRepository;
+    private UserJpaRepository userRepository;
 
     @Test
     public void create_returnSavedUser() {
@@ -65,7 +65,7 @@ public class UserServiceImplTest {
         Long userId = 1L;
         User user = User.builder()
                 .id(userId)
-                .name("ustomeName")
+                .name("CustomerName")
                 .email("CustomerName@yandex.ru")
                 .build();
 

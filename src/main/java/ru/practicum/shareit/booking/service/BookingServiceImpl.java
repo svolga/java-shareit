@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.dto.BookingRequestDto;
 import ru.practicum.shareit.booking.dto.BookingResponseDto;
@@ -49,9 +50,9 @@ public class BookingServiceImpl implements BookingService {
 
         Booking booking = BookingMapper.toBooking(bookingRequestDto, owner, item,
                 BookingStatus.WAITING);
-        Booking savedBbooking = bookingJpaRepository.save(booking);
-        log.info("Создан booking --> {}", savedBbooking);
-        return BookingMapper.toBookingResponseDto(savedBbooking);
+        Booking savedBooking = bookingJpaRepository.save(booking);
+        log.info("Создан booking --> {}", savedBooking);
+        return BookingMapper.toBookingResponseDto(savedBooking);
     }
 
     @Override
@@ -92,34 +93,32 @@ public class BookingServiceImpl implements BookingService {
         LocalDateTime now = LocalDateTime.now();
         List<Booking> listByOwner;
         int page = from / size;
-        Pageable pageRequest = PageRequest.of(page, size);
+
+        Pageable pageRequest = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "start"));
 
         switch (validState) {
             case ALL:
-                listByOwner = bookingJpaRepository.findAllByItem_Owner_IdOrderByStartDesc(ownerId, pageRequest);
+                listByOwner = bookingJpaRepository.findAllByItem_Owner_Id(ownerId, pageRequest);
                 break;
             case CURRENT:
-                listByOwner = bookingJpaRepository
-                        .findAllByItem_Owner_IdAndStartIsBeforeAndEndIsAfterOrderByStartDesc(
-                                ownerId, now, now, pageRequest);
+                listByOwner = bookingJpaRepository.findAllByItem_Owner_IdAndStartIsBeforeAndEndIsAfter(
+                        ownerId, now, now, pageRequest);
                 break;
             case PAST:
-                listByOwner = bookingJpaRepository.findAllByItem_Owner_IdAndEndIsBeforeOrderByStartDesc(
-                        ownerId, now, pageRequest);
+                listByOwner = bookingJpaRepository.findAllByItem_Owner_IdAndEndIsBefore(ownerId, now, pageRequest);
                 break;
             case FUTURE:
-                listByOwner = bookingJpaRepository.findAllByItem_Owner_IdAndStartIsAfterOrderByStartDesc(
+                listByOwner = bookingJpaRepository.findAllByItem_Owner_IdAndStartIsAfter(
                         ownerId, now, pageRequest);
                 break;
             case REJECTED:
                 List<BookingStatus> notApprovedStatus = List.of(BookingStatus.REJECTED, BookingStatus.CANCELED);
-                listByOwner = bookingJpaRepository
-                        .findAllByItem_Owner_IdAndStatusInOrderByStartDesc(ownerId, notApprovedStatus, pageRequest);
+                listByOwner = bookingJpaRepository.findAllByItem_Owner_IdAndStatusIn(ownerId,
+                        notApprovedStatus, pageRequest);
                 break;
             case WAITING:
-                listByOwner = bookingJpaRepository
-                        .findAllByItem_Owner_IdAndStatusOrderByStartDesc(ownerId,
-                                BookingStatus.valueOf("WAITING"), pageRequest);
+                listByOwner = bookingJpaRepository.findAllByItem_Owner_IdAndStatus(ownerId,
+                        BookingStatus.valueOf("WAITING"), pageRequest);
                 break;
             default:
                 throw new UnsupportedStatusException("Unknown state: UNSUPPORTED_STATUS");
@@ -131,38 +130,37 @@ public class BookingServiceImpl implements BookingService {
     @Override
     @Transactional(readOnly = true)
     public List<BookingResponseDto> getListByBooker(Long bookerId, String state, Integer from, Integer size) {
-
         checkIfUserExists(bookerId);
         BookingState validState = findBookingState(state);
         LocalDateTime now = LocalDateTime.now();
         List<Booking> listByBooker;
         int page = from / size;
-        Pageable pageRequest = PageRequest.of(page, size);
+        Pageable pageRequest = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "start"));
 
         switch (validState) {
             case ALL:
-                listByBooker = bookingJpaRepository.findAllByBookerIdOrderByStartDesc(bookerId, pageRequest);
+                listByBooker = bookingJpaRepository.findAllByBookerId(bookerId, pageRequest);
                 break;
             case CURRENT:
                 listByBooker = bookingJpaRepository
-                        .findAllByBookerIdAndStartIsBeforeAndEndIsAfterOrderByStartDesc(bookerId, now, now, pageRequest);
+                        .findAllByBookerIdAndStartIsBeforeAndEndIsAfter(bookerId, now, now, pageRequest);
                 break;
             case PAST:
-                listByBooker = bookingJpaRepository.findAllByBookerIdAndEndIsBeforeOrderByStartDesc(
+                listByBooker = bookingJpaRepository.findAllByBookerIdAndEndIsBefore(
                         bookerId, now, pageRequest);
                 break;
             case FUTURE:
-                listByBooker = bookingJpaRepository.findAllByBookerIdAndStartIsAfterOrderByStartDesc(
+                listByBooker = bookingJpaRepository.findAllByBookerIdAndStartIsAfter(
                         bookerId, now, pageRequest);
                 break;
             case REJECTED:
                 List<BookingStatus> notApprovedStatus = List.of(BookingStatus.REJECTED, BookingStatus.CANCELED);
                 listByBooker = bookingJpaRepository
-                        .findAllByBookerIdAndStatusInOrderByStartDesc(bookerId, notApprovedStatus, pageRequest);
+                        .findAllByBookerIdAndStatusIn(bookerId, notApprovedStatus, pageRequest);
                 break;
             case WAITING:
                 listByBooker = bookingJpaRepository
-                        .findAllByBookerIdAndStatusOrderByStartDesc(
+                        .findAllByBookerIdAndStatus(
                                 bookerId, BookingStatus.valueOf("WAITING"), pageRequest);
                 break;
             default:

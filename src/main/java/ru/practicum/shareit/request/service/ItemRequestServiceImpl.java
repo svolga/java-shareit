@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.item.dto.ItemDto;
@@ -65,10 +66,10 @@ public class ItemRequestServiceImpl implements ItemRequestService {
     public List<ItemRequestOutDto> getOtherUsersRequests(Long userId, Integer from, Integer size) {
         checkUserExists(userId);
         int page = from / size;
-        Pageable pageRequest = PageRequest.of(page, size);
+        Pageable pageRequest = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "created"));
 
         List<ItemRequest> itemRequests = itemRequestRepository
-                .findAllByRequesterIdIsNotOrderByCreatedDesc(userId, pageRequest);
+                .findAllByRequesterIdIsNot(userId, pageRequest);
 
         Map<ItemRequest, List<ItemDto>> map = getAllItemsForListRequests(itemRequests);
 

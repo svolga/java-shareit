@@ -21,38 +21,34 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public class ItemRepositoryTest {
     @Autowired
-    UserJpaRepository userRepository;
+    private UserJpaRepository userRepository;
     @Autowired
-    ItemJpaRepository itemRepository;
+    private ItemJpaRepository itemRepository;
     @Autowired
-    ItemRequestRepository itemRequestRepository;
-    User owner;
-    Long ownerId;
-    User requester;
-    Long requesterId;
-    Item item1;
-    Item item2;
-    ItemRequest item1Request;
-    ItemRequest item2Request;
-    Long item1RequestId;
-    Long item2RequestId;
+    private ItemRequestRepository itemRequestRepository;
+    private Long ownerId;
+    private Item item1;
+    private Item item2;
+    private ItemRequest item1Request;
+    private ItemRequest item2Request;
+    private Long item1RequestId;
+    private Long item2RequestId;
 
     @BeforeEach
     public void beforeEach() {
-        owner = User.builder()
+        User owner = User.builder()
                 .name("CustomerName")
                 .email("CustomerName@yandex.ru")
                 .build();
         owner = userRepository.save(owner);
 
         ownerId = owner.getId();
-        requester = User.builder()
+        User requester = User.builder()
                 .name("Alex")
                 .email("Alex@yandex.ru")
                 .build();
         requester = userRepository.save(requester);
 
-        requesterId = requester.getId();
         item1Request = ItemRequest.builder()
                 .description("I need bike")
                 .requester(requester)

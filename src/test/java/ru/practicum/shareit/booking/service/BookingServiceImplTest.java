@@ -9,6 +9,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import ru.practicum.shareit.booking.dto.BookingRequestDto;
 import ru.practicum.shareit.booking.dto.BookingResponseDto;
 import ru.practicum.shareit.booking.mapper.BookingMapper;
@@ -877,7 +878,7 @@ public class BookingServiceImplTest {
         //create parameters of page
         int from = 1;
         int size = 1;
-        Pageable page = PageRequest.of(from / size, size);
+        Pageable page = PageRequest.of(from / size, size, Sort.by(Sort.Direction.DESC, "start"));
 
         // create list of bookings
         Long booking1Id = 1L;
@@ -897,7 +898,7 @@ public class BookingServiceImplTest {
 
         //mock repository answer
         when(userRepository.existsById(ownerId)).thenReturn(true);
-        when(bookingRepository.findAllByItem_Owner_IdOrderByStartDesc(ownerId, page)).thenReturn(bookings);
+        when(bookingRepository.findAllByItem_Owner_Id(ownerId, page)).thenReturn(bookings);
 
         //invoke tested method
         List<BookingResponseDto> result = bookingService.getListByOwner(ownerId, state, from, size);
@@ -906,7 +907,7 @@ public class BookingServiceImplTest {
         InOrder inOrder = inOrder(userRepository, bookingRepository);
 
         inOrder.verify(userRepository).existsById(ownerId);
-        inOrder.verify(bookingRepository).findAllByItem_Owner_IdOrderByStartDesc(ownerId, page);
+        inOrder.verify(bookingRepository).findAllByItem_Owner_Id(ownerId, page);
 
         //check result
         assertEquals(result, expectedList);
@@ -937,7 +938,7 @@ public class BookingServiceImplTest {
         //create parameters of page
         int from = 10;
         int size = 2;
-        Pageable page = PageRequest.of(from / size, size);
+        Pageable page = PageRequest.of(from / size, size, Sort.by(Sort.Direction.DESC, "start"));
 
         // create list of bookings
         Long booking1Id = 1L;
@@ -957,7 +958,7 @@ public class BookingServiceImplTest {
 
         //mock repository answer
         when(userRepository.existsById(ownerId)).thenReturn(true);
-        when(bookingRepository.findAllByItem_Owner_IdAndStartIsBeforeAndEndIsAfterOrderByStartDesc(eq(ownerId),
+        when(bookingRepository.findAllByItem_Owner_IdAndStartIsBeforeAndEndIsAfter(eq(ownerId),
                 any(), any(), eq(page))).thenReturn(bookings);
 
         //invoke tested method
@@ -967,7 +968,7 @@ public class BookingServiceImplTest {
         InOrder inOrder = inOrder(userRepository, bookingRepository);
 
         inOrder.verify(userRepository).existsById(ownerId);
-        inOrder.verify(bookingRepository).findAllByItem_Owner_IdAndStartIsBeforeAndEndIsAfterOrderByStartDesc(
+        inOrder.verify(bookingRepository).findAllByItem_Owner_IdAndStartIsBeforeAndEndIsAfter(
                 eq(ownerId), any(), any(), eq(page));
         //check result
         assertEquals(result, expectedList);
@@ -998,7 +999,7 @@ public class BookingServiceImplTest {
         //create parameters of page
         int from = 10;
         int size = 10;
-        Pageable page = PageRequest.of(from / size, size);
+        Pageable page = PageRequest.of(from / size, size, Sort.by(Sort.Direction.DESC, "start"));
 
         // create list of bookings
         Long booking1Id = 1L;
@@ -1018,7 +1019,7 @@ public class BookingServiceImplTest {
 
         //mock repository answer
         when(userRepository.existsById(ownerId)).thenReturn(true);
-        when(bookingRepository.findAllByItem_Owner_IdAndEndIsBeforeOrderByStartDesc(eq(ownerId),
+        when(bookingRepository.findAllByItem_Owner_IdAndEndIsBefore(eq(ownerId),
                 any(), eq(page))).thenReturn(bookings);
 
         //invoke tested method
@@ -1028,7 +1029,7 @@ public class BookingServiceImplTest {
         InOrder inOrder = inOrder(userRepository, bookingRepository);
 
         inOrder.verify(userRepository).existsById(ownerId);
-        inOrder.verify(bookingRepository).findAllByItem_Owner_IdAndEndIsBeforeOrderByStartDesc(
+        inOrder.verify(bookingRepository).findAllByItem_Owner_IdAndEndIsBefore(
                 eq(ownerId), any(), eq(page));
         //check result
         assertEquals(result, expectedList);
@@ -1059,7 +1060,7 @@ public class BookingServiceImplTest {
         //create parameters of page
         int from = 10;
         int size = 10;
-        Pageable page = PageRequest.of(from / size, size);
+        Pageable page = PageRequest.of(from / size, size, Sort.by(Sort.Direction.DESC, "start"));
 
         // create list of bookings
         Long booking1Id = 1L;
@@ -1079,7 +1080,7 @@ public class BookingServiceImplTest {
 
         //mock repository answer
         when(userRepository.existsById(ownerId)).thenReturn(true);
-        when(bookingRepository.findAllByItem_Owner_IdAndStartIsAfterOrderByStartDesc(eq(ownerId),
+        when(bookingRepository.findAllByItem_Owner_IdAndStartIsAfter(eq(ownerId),
                 any(), eq(page))).thenReturn(bookings);
 
         //invoke tested method
@@ -1089,7 +1090,7 @@ public class BookingServiceImplTest {
         InOrder inOrder = inOrder(userRepository, bookingRepository);
 
         inOrder.verify(userRepository).existsById(ownerId);
-        inOrder.verify(bookingRepository).findAllByItem_Owner_IdAndStartIsAfterOrderByStartDesc(
+        inOrder.verify(bookingRepository).findAllByItem_Owner_IdAndStartIsAfter(
                 eq(ownerId), any(), eq(page));
         //check result
         assertEquals(result, expectedList);
@@ -1123,7 +1124,7 @@ public class BookingServiceImplTest {
         //create parameters of page
         int from = 10;
         int size = 10;
-        Pageable page = PageRequest.of(from / size, size);
+        Pageable page = PageRequest.of(from / size, size, Sort.by(Sort.Direction.DESC, "start"));
 
         // create list of bookings
         Long booking1Id = 1L;
@@ -1143,7 +1144,7 @@ public class BookingServiceImplTest {
 
         //mock repository answer
         when(userRepository.existsById(ownerId)).thenReturn(true);
-        when(bookingRepository.findAllByItem_Owner_IdAndStatusInOrderByStartDesc(ownerId, notApprovedStatus, page))
+        when(bookingRepository.findAllByItem_Owner_IdAndStatusIn(ownerId, notApprovedStatus, page))
                 .thenReturn(bookings);
 
         //invoke tested method
@@ -1154,7 +1155,7 @@ public class BookingServiceImplTest {
 
         inOrder.verify(userRepository).existsById(ownerId);
         inOrder.verify(bookingRepository)
-                .findAllByItem_Owner_IdAndStatusInOrderByStartDesc(ownerId, notApprovedStatus, page);
+                .findAllByItem_Owner_IdAndStatusIn(ownerId, notApprovedStatus, page);
         //check result
         assertEquals(result, expectedList);
 
@@ -1187,7 +1188,7 @@ public class BookingServiceImplTest {
         //create parameters of page
         int from = 10;
         int size = 10;
-        Pageable page = PageRequest.of(from / size, size);
+        Pageable page = PageRequest.of(from / size, size, Sort.by(Sort.Direction.DESC, "start"));
 
         // create list of bookings
         Long booking1Id = 1L;
@@ -1207,7 +1208,7 @@ public class BookingServiceImplTest {
 
         //mock repository answer
         when(userRepository.existsById(ownerId)).thenReturn(true);
-        when(bookingRepository.findAllByItem_Owner_IdAndStatusOrderByStartDesc(ownerId, status, page))
+        when(bookingRepository.findAllByItem_Owner_IdAndStatus(ownerId, status, page))
                 .thenReturn(bookings);
 
         //invoke tested method
@@ -1218,7 +1219,7 @@ public class BookingServiceImplTest {
 
         inOrder.verify(userRepository).existsById(ownerId);
         inOrder.verify(bookingRepository)
-                .findAllByItem_Owner_IdAndStatusOrderByStartDesc(ownerId, status, page);
+                .findAllByItem_Owner_IdAndStatus(ownerId, status, page);
         //check result
         assertEquals(result, expectedList);
 
@@ -1301,7 +1302,7 @@ public class BookingServiceImplTest {
         //create parameters of page
         int from = 10;
         int size = 10;
-        Pageable page = PageRequest.of(from / size, size);
+        Pageable page = PageRequest.of(from / size, size, Sort.by(Sort.Direction.DESC, "start"));
 
         // create list of bookings
         Long booking1Id = 1L;
@@ -1321,7 +1322,7 @@ public class BookingServiceImplTest {
 
         //mock repository answer
         when(userRepository.existsById(bookerId)).thenReturn(true);
-        when(bookingRepository.findAllByBookerIdOrderByStartDesc(bookerId, page)).thenReturn(bookings);
+        when(bookingRepository.findAllByBookerId(bookerId, page)).thenReturn(bookings);
 
         //invoke tested method
         List<BookingResponseDto> result = bookingService.getListByBooker(bookerId, state, from, size);
@@ -1330,7 +1331,7 @@ public class BookingServiceImplTest {
         InOrder inOrder = inOrder(userRepository, bookingRepository);
 
         inOrder.verify(userRepository).existsById(bookerId);
-        inOrder.verify(bookingRepository).findAllByBookerIdOrderByStartDesc(bookerId, page);
+        inOrder.verify(bookingRepository).findAllByBookerId(bookerId, page);
 
         //check result
         assertEquals(result, expectedList);
@@ -1361,7 +1362,7 @@ public class BookingServiceImplTest {
         //create parameters of page
         int from = 10;
         int size = 10;
-        Pageable page = PageRequest.of(from / size, size);
+        Pageable page = PageRequest.of(from / size, size, Sort.by(Sort.Direction.DESC, "start"));
 
         // create list of bookings
         Long booking1Id = 1L;
@@ -1381,7 +1382,7 @@ public class BookingServiceImplTest {
 
         //mock repository answer
         when(userRepository.existsById(bookerId)).thenReturn(true);
-        when(bookingRepository.findAllByBookerIdAndStartIsBeforeAndEndIsAfterOrderByStartDesc(eq(bookerId),
+        when(bookingRepository.findAllByBookerIdAndStartIsBeforeAndEndIsAfter(eq(bookerId),
                 any(), any(), eq(page))).thenReturn(bookings);
 
         //invoke tested method
@@ -1391,7 +1392,7 @@ public class BookingServiceImplTest {
         InOrder inOrder = inOrder(userRepository, bookingRepository);
 
         inOrder.verify(userRepository).existsById(bookerId);
-        inOrder.verify(bookingRepository).findAllByBookerIdAndStartIsBeforeAndEndIsAfterOrderByStartDesc(
+        inOrder.verify(bookingRepository).findAllByBookerIdAndStartIsBeforeAndEndIsAfter(
                 eq(bookerId), any(), any(), eq(page));
         //check result
         assertEquals(result, expectedList);
@@ -1422,7 +1423,7 @@ public class BookingServiceImplTest {
         //create parameters of page
         int from = 10;
         int size = 10;
-        Pageable page = PageRequest.of(from / size, size);
+        Pageable page = PageRequest.of(from / size, size, Sort.by(Sort.Direction.DESC, "start"));
 
         // create list of bookings
         Long booking1Id = 1L;
@@ -1442,7 +1443,7 @@ public class BookingServiceImplTest {
 
         //mock repository answer
         when(userRepository.existsById(bookerId)).thenReturn(true);
-        when(bookingRepository.findAllByBookerIdAndEndIsBeforeOrderByStartDesc(eq(bookerId),
+        when(bookingRepository.findAllByBookerIdAndEndIsBefore(eq(bookerId),
                 any(), eq(page))).thenReturn(bookings);
 
         //invoke tested method
@@ -1452,7 +1453,7 @@ public class BookingServiceImplTest {
         InOrder inOrder = inOrder(userRepository, bookingRepository);
 
         inOrder.verify(userRepository).existsById(bookerId);
-        inOrder.verify(bookingRepository).findAllByBookerIdAndEndIsBeforeOrderByStartDesc(
+        inOrder.verify(bookingRepository).findAllByBookerIdAndEndIsBefore(
                 eq(bookerId), any(), eq(page));
         //check result
         assertEquals(result, expectedList);
@@ -1483,7 +1484,7 @@ public class BookingServiceImplTest {
         //create parameters of page
         int from = 10;
         int size = 10;
-        Pageable page = PageRequest.of(from / size, size);
+        Pageable page = PageRequest.of(from / size, size, Sort.by(Sort.Direction.DESC, "start"));
 
         // create list of bookings
         Long booking1Id = 1L;
@@ -1503,7 +1504,7 @@ public class BookingServiceImplTest {
 
         //mock repository answer
         when(userRepository.existsById(bookerId)).thenReturn(true);
-        when(bookingRepository.findAllByBookerIdAndStartIsAfterOrderByStartDesc(eq(bookerId),
+        when(bookingRepository.findAllByBookerIdAndStartIsAfter(eq(bookerId),
                 any(), eq(page))).thenReturn(bookings);
 
         //invoke tested method
@@ -1513,7 +1514,7 @@ public class BookingServiceImplTest {
         InOrder inOrder = inOrder(userRepository, bookingRepository);
 
         inOrder.verify(userRepository).existsById(bookerId);
-        inOrder.verify(bookingRepository).findAllByBookerIdAndStartIsAfterOrderByStartDesc(
+        inOrder.verify(bookingRepository).findAllByBookerIdAndStartIsAfter(
                 eq(bookerId), any(), eq(page));
         //check result
         assertEquals(result, expectedList);
@@ -1547,7 +1548,7 @@ public class BookingServiceImplTest {
         //create parameters of page
         int from = 10;
         int size = 10;
-        Pageable page = PageRequest.of(from / size, size);
+        Pageable page = PageRequest.of(from / size, size, Sort.by(Sort.Direction.DESC, "start"));
 
         // create list of bookings
         Long booking1Id = 1L;
@@ -1567,7 +1568,7 @@ public class BookingServiceImplTest {
 
         //mock repository answer
         when(userRepository.existsById(bookerId)).thenReturn(true);
-        when(bookingRepository.findAllByBookerIdAndStatusInOrderByStartDesc(bookerId, notApprovedStatus, page))
+        when(bookingRepository.findAllByBookerIdAndStatusIn(bookerId, notApprovedStatus, page))
                 .thenReturn(bookings);
 
         //invoke tested method
@@ -1578,7 +1579,7 @@ public class BookingServiceImplTest {
 
         inOrder.verify(userRepository).existsById(bookerId);
         inOrder.verify(bookingRepository)
-                .findAllByBookerIdAndStatusInOrderByStartDesc(bookerId, notApprovedStatus, page);
+                .findAllByBookerIdAndStatusIn(bookerId, notApprovedStatus, page);
         //check result
         assertEquals(result, expectedList);
 
@@ -1611,7 +1612,7 @@ public class BookingServiceImplTest {
         //create parameters of page
         int from = 10;
         int size = 10;
-        Pageable page = PageRequest.of(from / size, size);
+        Pageable page = PageRequest.of(from / size, size, Sort.by(Sort.Direction.DESC, "start"));
 
         // create list of bookings
         Long booking1Id = 1L;
@@ -1631,7 +1632,7 @@ public class BookingServiceImplTest {
 
         //mock repository answer
         when(userRepository.existsById(bookerId)).thenReturn(true);
-        when(bookingRepository.findAllByBookerIdAndStatusOrderByStartDesc(bookerId, status, page))
+        when(bookingRepository.findAllByBookerIdAndStatus(bookerId, status, page))
                 .thenReturn(bookings);
 
         //invoke tested method
@@ -1642,7 +1643,7 @@ public class BookingServiceImplTest {
 
         inOrder.verify(userRepository).existsById(bookerId);
         inOrder.verify(bookingRepository)
-                .findAllByBookerIdAndStatusOrderByStartDesc(bookerId, status, page);
+                .findAllByBookerIdAndStatus(bookerId, status, page);
         //check result
         assertEquals(result, expectedList);
 

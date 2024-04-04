@@ -22,7 +22,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 public class UserServiceIntegrationTest {
 
     @Autowired
-    UserService userService;
+    private UserService userService;
 
     @Test
     public void shouldCreateUser_andGetByExistingId() {

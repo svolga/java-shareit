@@ -34,7 +34,6 @@ public class ItemRequestServiceIntegrationTest {
     @Autowired
     private ItemService itemService;
 
-
     @Test
     public void shouldFailCreate_ThrowExceptionUserNotFound() {
 

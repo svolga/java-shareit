@@ -1,5 +1,6 @@
 package ru.practicum.shareit.util.errors;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -17,8 +18,11 @@ import ru.practicum.shareit.util.exceptions.UnsupportedStatusException;
 import javax.persistence.EntityNotFoundException;
 import javax.validation.ConstraintViolationException;
 import javax.validation.ValidationException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 
 @RestControllerAdvice("ru.practicum.shareit")
+@Slf4j
 public class ErrorHandler {
     @ExceptionHandler({ObjectNotFoundException.class, EntityNotFoundException.class,
             AccessIsNotAllowedException.class})
@@ -49,8 +53,15 @@ public class ErrorHandler {
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public ErrorResponse handleUnknownError(final Throwable e) {
-        return new ErrorResponse("Unknown error " + e.getMessage());
+    public ErrorResponse handleUnknownError(final Exception e) {
+        log.error("500 Unknown error --> {}, -> {}", e.getMessage(), e);
+        return new ErrorResponse(e.getMessage(), getStackTrace(e));
+    }
+
+    private String getStackTrace(Exception  e) {
+        StringWriter sw = new StringWriter();
+        PrintWriter pw = new PrintWriter(sw);
+        return pw.toString();
     }
 
 }
