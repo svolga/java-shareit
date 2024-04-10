@@ -1,9 +1,9 @@
-package ru.practicum.gate.booking.validation;
+package ru.practicum.shareit.booking.validation;
 
-import ru.practicum.gate.booking.dto.BookingRequestDto;
-import ru.practicum.gate.booking.state.BookingState;
-import ru.practicum.gate.util.exceptions.DateTimeException;
-import ru.practicum.gate.util.exceptions.UnsupportedStatusException;
+import ru.practicum.shareit.booking.dto.BookingRequestDto;
+import ru.practicum.shareit.booking.state.BookingState;
+import ru.practicum.shareit.util.exceptions.DateTimeException;
+import ru.practicum.shareit.util.exceptions.UnsupportedStatusException;
 
 import java.time.LocalDateTime;
 
