@@ -72,8 +72,8 @@ public class UserControllerTest {
 
         //perform request and check status and content
         String result = mockMvc.perform(post("/users")
-                        .contentType(jsonType)
-                        .content(userString))
+                .contentType(jsonType)
+                .content(userString))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id", is(user.getId()), Long.class))
                 .andExpect(jsonPath("$.name", is(user.getName())))
@@ -110,8 +110,8 @@ public class UserControllerTest {
 
         //perform request and check status
         mockMvc.perform(post("/users")
-                        .contentType(jsonType)
-                        .content(invalidUserString))
+                .contentType(jsonType)
+                .content(invalidUserString))
                 .andExpect(status().isBadRequest());
 
         //verify invokes
@@ -140,8 +140,8 @@ public class UserControllerTest {
 
         //perform request and check status
         mockMvc.perform(post("/users")
-                        .contentType(jsonType)
-                        .content(invalidUserString))
+                .contentType(jsonType)
+                .content(invalidUserString))
                 .andExpect(status().isBadRequest());
 
         //verify invokes
@@ -166,8 +166,8 @@ public class UserControllerTest {
 
         //perform request and check status
         mockMvc.perform(post("/users")
-                        .contentType(jsonType)
-                        .content(invalidUserString))
+                .contentType(jsonType)
+                .content(invalidUserString))
                 .andExpect(status().isBadRequest());
 
         //verify invokes
@@ -193,8 +193,8 @@ public class UserControllerTest {
 
         //perform request and check status
         mockMvc.perform(post("/users")
-                        .contentType(jsonType)
-                        .content(invalidUserString))
+                .contentType(jsonType)
+                .content(invalidUserString))
                 .andExpect(status().isBadRequest());
 
         //verify invokes
@@ -223,8 +223,8 @@ public class UserControllerTest {
 
         //perform request and check status
         mockMvc.perform(post("/users")
-                        .contentType(jsonType)
-                        .content(invalidUserString))
+                .contentType(jsonType)
+                .content(invalidUserString))
                 .andExpect(status().isBadRequest());
 
         //verify invokes
@@ -282,8 +282,8 @@ public class UserControllerTest {
 
         //perform request and check status and content
         String result = mockMvc.perform(patch("/users/{userId}", userId)
-                        .contentType(jsonType)
-                        .content(validUserString))
+                .contentType(jsonType)
+                .content(validUserString))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id", is(validUser.getId()), Long.class))
                 .andExpect(jsonPath("$.name", is(validUser.getName())))
@@ -321,8 +321,8 @@ public class UserControllerTest {
 
         //perform request and check status
         mockMvc.perform(patch("/users/{userId}", userId)
-                        .contentType(jsonType)
-                        .content(invalidUserString))
+                .contentType(jsonType)
+                .content(invalidUserString))
                 .andExpect(status().isBadRequest());
 
         //verify invokes

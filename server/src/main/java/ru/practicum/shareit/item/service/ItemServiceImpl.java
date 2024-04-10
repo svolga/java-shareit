@@ -197,7 +197,7 @@ public class ItemServiceImpl implements ItemService {
     private void checkAccessForOwnerNotAllowed(Item item, Long userId) {
         if (isOwner(item, userId)) {
             throw new AccessIsNotAllowedException(
-                    "Для User с userId "+ userId + "не может забронировать item " + item);
+                    "Для User с userId " + userId + "не может забронировать item " + item);
         }
     }
 

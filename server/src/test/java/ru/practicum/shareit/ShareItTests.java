@@ -14,7 +14,6 @@ import ru.practicum.shareit.booking.dto.BookingRequestDto;
 import ru.practicum.shareit.booking.dto.BookingResponseDto;
 import ru.practicum.shareit.booking.mapper.BookingMapper;
 import ru.practicum.shareit.booking.model.BookingStatus;
-//import ru.practicum.shareit.item.ItemController;
 import ru.practicum.shareit.item.dto.CommentRequestDto;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemResponseDto;
@@ -1284,10 +1283,10 @@ class ShareItTests {
         bookingController.create(bookerId, bookingItem1Future);
         Long bookingId = userDto.getId();
         bookingController.updateStatus(ownerId, bookingId, true);
-        CommentRequestDto CommentRequestDto = commentToItem1First;
+        CommentRequestDto commentRequestDto = commentToItem1First;
 
         assertThrows(UnavailableItemException.class,
-                () -> itemController.addComment(bookerId, CommentRequestDto, itemId),
+                () -> itemController.addComment(bookerId, commentRequestDto, itemId),
                 "Не выброшено исключение UnavailableItemException.");
 
     }

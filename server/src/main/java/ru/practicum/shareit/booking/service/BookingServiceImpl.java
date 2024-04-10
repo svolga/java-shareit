@@ -18,10 +18,8 @@ import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserJpaRepository;
 import ru.practicum.shareit.item.model.Item;
 
-
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.util.exceptions.AccessIsNotAllowedException;
-import ru.practicum.shareit.util.exceptions.DateTimeException;
 import ru.practicum.shareit.util.exceptions.ObjectNotFoundException;
 import ru.practicum.shareit.util.exceptions.UnavailableItemException;
 import ru.practicum.shareit.util.exceptions.UnsupportedStatusException;
@@ -53,8 +51,7 @@ public class BookingServiceImpl implements BookingService {
             Booking savedBooking = bookingJpaRepository.save(booking);
             log.info("Создан booking --> {}", savedBooking);
             return BookingMapper.toBookingResponseDto(savedBooking);
-        }
-        catch (RuntimeException ex){
+        } catch (RuntimeException ex) {
             log.error("!!! Exception --> ", ex.getMessage());
             throw ex;
         }
@@ -257,4 +254,3 @@ public class BookingServiceImpl implements BookingService {
         }
     }
 }
-

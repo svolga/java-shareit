@@ -10,8 +10,6 @@ import java.util.List;
 
 @Repository
 public interface ItemJpaRepository extends JpaRepository<Item, Long> {
-
-//    List<Item> findAllByOwnerId(Long userId);
     List<Item> findAllByOwnerIdOrderById(Long userId);
 
     @Query("SELECT i " +
@@ -21,5 +19,6 @@ public interface ItemJpaRepository extends JpaRepository<Item, Long> {
     List<Item> searchItemsBySubstring(String text);
 
     List<Item> findAllByRequestId(Long requestId);
+
     List<Item> findAllByRequestIn(List<ItemRequest> itemRequests);
 }

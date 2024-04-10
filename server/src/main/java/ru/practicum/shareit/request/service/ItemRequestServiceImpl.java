@@ -37,9 +37,7 @@ public class ItemRequestServiceImpl implements ItemRequestService {
     @Override
     @Transactional
     public ItemRequestOutDto create(Long userId, ItemRequestDto itemRequestDto) {
-
         User requester = getUserByIdIfExists(userId);
-
         ItemRequest itemRequest = ItemRequestMapper.toItemRequest(itemRequestDto, requester);
         ItemRequest itemRequestWithId = itemRequestRepository.save(itemRequest);
         log.info("Сохранена информация о запросе: {}", itemRequestWithId);
@@ -50,8 +48,6 @@ public class ItemRequestServiceImpl implements ItemRequestService {
     @Transactional(readOnly = true)
     public List<ItemRequestOutDto> getOwnRequests(Long userId) {
         checkUserExists(userId);
-
-//        List<ItemRequest> itemRequests = itemRequestRepository.findAllByRequesterIdOrderByCreatedDesc(userId);
         List<ItemRequest> itemRequests = itemRequestRepository.findAllByRequesterIdOrderById(userId);
         Map<ItemRequest, List<ItemDto>> map = getAllItemsForListRequests(itemRequests);
 
@@ -68,7 +64,6 @@ public class ItemRequestServiceImpl implements ItemRequestService {
     public List<ItemRequestOutDto> getOtherUsersRequests(Long userId, Integer from, Integer size) {
         checkUserExists(userId);
         int page = from / size;
-//        Pageable pageRequest = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "created"));
         Pageable pageRequest = PageRequest.of(page, size, Sort.by(Sort.Direction.ASC, "id"));
 
         List<ItemRequest> itemRequests = itemRequestRepository
@@ -135,5 +130,4 @@ public class ItemRequestServiceImpl implements ItemRequestService {
                 .collect(Collectors.joining(", "));
         log.info("Список запросов для items: {}", result);
     }
-
 }
