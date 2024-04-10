@@ -46,7 +46,7 @@ public class UserControllerTest {
 
     private Long userId;
     private MediaType jsonType;
-    
+
     @BeforeEach
     public void before() {
         userId = 1L;
