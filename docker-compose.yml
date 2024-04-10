@@ -3,19 +3,20 @@ services:
   gateway:
     build: gateway
     image: gateway-image
-    container_name: gateway-container
+    container_name: gateway
     ports:
       - "8080:8080"
     depends_on:
       - server
     environment:
       - SHAREIT_SERVER_URL=http://server:9090
+      - SERVER_PORT=8080
       - TZ=Europe/Moscow
 
   server:
     build: server
     image: server-image
-    container_name: server-container
+    container_name: server
     ports:
       - "9090:9090"
     depends_on:
@@ -31,7 +32,7 @@ services:
 
   db:
     image: postgres:13.7-alpine
-    container_name: db-container
+    container_name: db
     ports:
       - "6541:5432"
     environment:
