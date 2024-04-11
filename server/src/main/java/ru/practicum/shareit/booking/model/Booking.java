@@ -9,6 +9,7 @@ import ru.practicum.shareit.item.model.Item;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -39,7 +40,7 @@ public class Booking {
     @ManyToOne()
     @JoinColumn(name = "booker_id", referencedColumnName = "id", nullable = false)
     private User booker;
-    @Enumerated
     @Column(name = "status")
+    @Enumerated(EnumType.STRING)
     private BookingStatus status;
 }
