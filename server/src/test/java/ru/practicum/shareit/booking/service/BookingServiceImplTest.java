@@ -138,54 +138,6 @@ public class BookingServiceImplTest {
 
     }
 
-    @Test
-    public void create_whenStartEqualsEnd_thenThrowsIncorrectTimeException_doesNotInvokeAnyMore() {
-
-        // create bookerId;
-        Long bookerId = 2L;
-
-        // create input BookingDto with invalid start equals end fields to save
-        LocalDateTime start = LocalDateTime.of(2030, 1, 1, 1, 1, 1);
-
-        BookingRequestDto bookingDto = BookingRequestDto.builder()
-                .start(start)
-                .end(start)
-                .build();
-
-        //invoke tested method to check throws
-        assertThrows(DateTimeException.class,
-                () -> bookingService.create(bookerId, bookingDto),
-                "Указаны некорректные даты начала и/или конца бронирования");
-
-        //verify repositories' do not invoke
-        verifyNoInteractions(itemRepository, userRepository, bookingRepository);
-
-    }
-
-    @Test
-    public void create_whenEndIsBeforeStart_thenThrowsIncorrectTimeException_doesNotInvokeAnyMore() {
-
-        // create bookerId;
-        Long bookerId = 2L;
-
-        // create input BookingDto with invalid start equals end fields to save
-        LocalDateTime start = LocalDateTime.of(2030, 1, 1, 1, 1, 1);
-        LocalDateTime endBeforeStart = start.minusYears(1);
-
-        BookingRequestDto bookingDto = BookingRequestDto.builder()
-                .start(start)
-                .end(endBeforeStart)
-                .build();
-
-        //invoke tested method to check throws
-        assertThrows(DateTimeException.class,
-                () -> bookingService.create(bookerId, bookingDto),
-                "Указаны некорректные даты начала и/или конца бронирования");
-
-        //verify repositories' do not invoke
-        verifyNoInteractions(itemRepository, userRepository, bookingRepository);
-
-    }
 
     @Test
     public void create_whenStartEndAreValid_ItemDoesNotExist_thenThrowsObjectNotFound_doesNotInvokeAnyMore() {

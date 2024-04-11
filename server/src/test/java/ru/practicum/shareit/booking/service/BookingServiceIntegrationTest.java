@@ -31,65 +31,13 @@ public class BookingServiceIntegrationTest {
     private BookingService bookingService;
 
     @Test
-    public void shouldFailCreateIfStartEqualsEnd() {
-
-        // create Booker
-        Long bookerId = 1L;
-        UserDto bookerDto = UserDto.builder()
-                .name("CustomerName")
-                .email("CustomerName@yandex.ru")
-                .build();
-        userService.create(bookerDto);
-
-        // create input BookingDto with invalid start equals end fields to save
-        LocalDateTime start = LocalDateTime.of(2030, 1, 1, 1, 1, 1);
-
-        BookingRequestDto bookingDto = BookingRequestDto.builder()
-                .start(start)
-                .end(start)
-                .build();
-
-        //invoke tested method to check throws
-        assertThrows(DateTimeException.class,
-                () -> bookingService.create(bookerId, bookingDto),
-                "Указаны некорректные даты начала и/или конца бронирования");
-
-    }
-
-    @Test
-    public void shouldFailCreateIfEndIsBeforeStart() {
-
-        // create Booker
-        Long bookerId = 1L;
-        UserDto bookerDto = UserDto.builder()
-                .name("CustomerName")
-                .email("CustomerName@yandex.ru")
-                .build();
-        userService.create(bookerDto);
-
-        // create input BookingDto with invalid start equals end fields to save
-        LocalDateTime start = LocalDateTime.of(2030, 1, 1, 1, 1, 1);
-        LocalDateTime endBeforeStart = start.minusYears(1);
-
-        BookingRequestDto bookingDto = BookingRequestDto.builder()
-                .start(start)
-                .end(endBeforeStart)
-                .build();
-
-        //invoke tested method to check throws
-        assertThrows(DateTimeException.class,
-                () -> bookingService.create(bookerId, bookingDto),
-                "Указаны некорректные даты начала и/или конца бронирования");
-    }
-
-    @Test
     public void shouldFailCreateIfItemIsNotFound() {
 
         // create Booker
         Long bookerId = 2L;
         UserDto bookerDto = UserDto.builder()
                 .name("CustomerName")
-                .email("CustomerName@yandex.ru")
+                .email("CustomeBrName@yandex.ru")
                 .build();
         userService.create(bookerDto);
 

@@ -11,6 +11,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -34,13 +35,13 @@ public class Booking {
     private LocalDateTime start;
     @Column(name = "end_time", nullable = false)
     private LocalDateTime end;
-    @ManyToOne
+    @ManyToOne()
     @JoinColumn(name = "item_id", referencedColumnName = "id", nullable = false)
     private Item item;
-    @ManyToOne
+    @ManyToOne()
     @JoinColumn(name = "booker_id", referencedColumnName = "id", nullable = false)
     private User booker;
-    @Enumerated(EnumType.STRING)
+    @Enumerated
     @Column(name = "status")
     private BookingStatus status;
 }

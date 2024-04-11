@@ -25,7 +25,6 @@ import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.mapper.UserMapper;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.util.exceptions.AccessIsNotAllowedException;
-import ru.practicum.shareit.util.exceptions.DateTimeException;
 import ru.practicum.shareit.util.exceptions.EmailAlreadyExistsException;
 import ru.practicum.shareit.util.exceptions.ObjectNotFoundException;
 import ru.practicum.shareit.util.exceptions.UnavailableItemException;
@@ -570,29 +569,6 @@ class ShareItTests {
 
     }
 
-    @Test
-    public void shouldFailCreateBookingWithEndEqualsStart() {
-
-        UserDto userDto1 = userController.create(userCustomerName4);
-        Long bookerId = userDto1.getId();
-
-        assertThrows(DateTimeException.class,
-                () -> bookingController.create(bookerId, bookingInvalidStartEqualsEnd),
-                "Не выброшено исключение DateTimeException");
-
-    }
-
-    @Test
-    public void shouldFailCreateBookingWithEndBeforeStart() {
-
-        UserDto userDto1 = userController.create(userCustomerName4);
-        Long bookerId = userDto1.getId();
-
-        assertThrows(DateTimeException.class,
-                () -> bookingController.create(bookerId, bookingInvalidEndBeforeStart),
-                "Не выброшено исключение DateTimeException");
-
-    }
 
     @Test
     public void shouldFailCreateBookingWithUnavailableItemStatus() {

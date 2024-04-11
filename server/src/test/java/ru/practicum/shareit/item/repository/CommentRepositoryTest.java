@@ -87,13 +87,6 @@ public class CommentRepositoryTest {
         commentRepository.save(comment1ToItem2);
     }
 
-    @AfterEach
-    public void afterEach() {
-        userRepository.deleteAll();
-        itemRepository.deleteAll();
-        commentRepository.deleteAll();
-    }
-
     @Test
     public void findAllByItemId() {
 

@@ -1,7 +1,6 @@
 package ru.practicum.shareit.request.repository;
 
 import org.assertj.core.api.AssertionsForClassTypes;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,33 +22,40 @@ import java.util.List;
 @DataJpaTest
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public class ItemRequestRepositoryTest {
+
     @Autowired
-    private BookingJpaRepository bookingRepository;
+    BookingJpaRepository bookingRepository;
     @Autowired
-    private UserJpaRepository userRepository;
+    UserJpaRepository userRepository;
     @Autowired
-    private ItemJpaRepository itemRepository;
+    ItemJpaRepository itemRepository;
     @Autowired
-    private ItemRequestRepository itemRequestRepository;
-    private Long ownerId;
-    private Long requesterId;
-    private Pageable page;
-    private Pageable pageWithSize1;
-    private ItemRequest item1Request;
-    private ItemRequest item2Request;
+    ItemRequestRepository itemRequestRepository;
+    User owner;
+    Long ownerId;
+    Long requesterId;
+    Long itemFirstId;
+    Long itemSecondId;
+    User requester;
+    Item item1;
+    Item item2;
+    Pageable page;
+    Pageable pageWithSize1;
+    ItemRequest item1Request;
+    ItemRequest item2Request;
 
     @BeforeEach
     void beforeEach() {
-        Sort sort = Sort.by(Sort.Direction.DESC, "created");
+        Sort sort = Sort.by(Sort.Direction.ASC, "id");
         page = PageRequest.of(0, 10, sort);
-        pageWithSize1 = PageRequest.of(0, 1, sort);
-        User owner = User.builder()
-                .name("CustomerName")
-                .email("CustomerName@yandex.ru")
+        pageWithSize1 = PageRequest.of(0, 1);
+        owner = User.builder()
+                .name("Olga")
+                .email("Olga@yandex.ru")
                 .build();
         owner = userRepository.save(owner);
         ownerId = owner.getId();
-        User requester = User.builder()
+        requester = User.builder()
                 .name("Alex")
                 .email("Alex@yandex.ru")
                 .build();
@@ -67,30 +73,25 @@ public class ItemRequestRepositoryTest {
                 .build();
         itemRequestRepository.save(item1Request);
         itemRequestRepository.save(item2Request);
-        Item item1 = Item.builder()
+        item1 = Item.builder()
                 .name("bike")
                 .description("new")
                 .available(true)
                 .owner(owner)
                 .request(item1Request)
                 .build();
-        itemRepository.save(item1);
-
-        Item item2 = Item.builder()
+        item1 = itemRepository.save(item1);
+        itemFirstId = item1.getId();
+        item2 = Item.builder()
                 .name("pram")
                 .description("new")
                 .available(true)
                 .owner(owner)
                 .request(item2Request)
                 .build();
-        itemRepository.save(item2);
-    }
+        item2 = itemRepository.save(item2);
+        itemSecondId = item2.getId();
 
-    @AfterEach
-    void afterEach() {
-        userRepository.deleteAll();
-        itemRepository.deleteAll();
-        bookingRepository.deleteAll();
     }
 
     @Test
@@ -117,7 +118,7 @@ public class ItemRequestRepositoryTest {
                 .hasSize(2)
                 .contains(item1Request)
                 .contains(item2Request)
-                .endsWith(item1Request);
+                .endsWith(item2Request);
 
     }
 
@@ -145,4 +146,5 @@ public class ItemRequestRepositoryTest {
                 .isEmpty();
 
     }
+
 }

@@ -29,7 +29,7 @@ public class ItemRequest {
     private Long id;
     @Column(name = "description", nullable = false)
     private String description;
-    @ManyToOne
+    @ManyToOne()
     @JoinColumn(name = "requester_id", referencedColumnName = "id")
     private User requester;
     @Column(name = "created", nullable = false)

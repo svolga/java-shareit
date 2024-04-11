@@ -123,123 +123,6 @@ public class BookingControllerTest {
         assertEquals(expectedBookingString, result);
     }
 
-    @Test
-    @SneakyThrows
-    public void create_WhenBookingHasStartInPast_StatusIsBadRequest_DoesNotInvokeService() {
-
-        // create invalid start time
-        LocalDateTime pastStart = LocalDateTime.of(2023, 1, 1, 1, 1, 1);
-
-        //create valid end time
-        LocalDateTime futureEnd = LocalDateTime.of(2024, 2, 1, 1, 1, 1);
-
-        // create invalid input booking: BookingDto
-        BookingRequestDto invalidBooking = BookingRequestDto.builder()
-                .start(pastStart)
-                .end(futureEnd)
-                .build();
-
-        // map booking into string
-        String invalidBookingString = objectMapper.writeValueAsString(invalidBooking);
-
-        //perform tested request and check status
-        mockMvc.perform(post("/bookings")
-                        .header(header, userId)
-                        .contentType(jsonType)
-                        .content(invalidBookingString))
-                .andExpect(status().isBadRequest());
-
-        // verify invokes
-        verify(bookingService, Mockito.never()).create(userId, invalidBooking);
-    }
-
-    @Test
-    @SneakyThrows
-    public void create_WhenBookingHasEndInPast_StatusIsBadRequest_DoesNotInvokeService() {
-
-        // create valid start time
-        LocalDateTime futureStart = LocalDateTime.of(2024, 1, 1, 1, 1, 1);
-
-        // create invalid end time
-        LocalDateTime pastEnd = LocalDateTime.of(2023, 2, 1, 1, 1, 1);
-
-        // create invalid input booking: BookingDto
-        BookingRequestDto invalidBooking = BookingRequestDto.builder()
-                .start(futureStart)
-                .end(pastEnd)
-                .build();
-
-        // map booking into string
-        String invalidBookingString = objectMapper.writeValueAsString(invalidBooking);
-
-        //perform tested request and check status
-        mockMvc.perform(post("/bookings")
-                        .header(header, userId)
-                        .contentType(jsonType)
-                        .content(invalidBookingString))
-                .andExpect(status().isBadRequest());
-
-        // verify invokes
-        verify(bookingService, Mockito.never()).create(userId, invalidBooking);
-    }
-
-    @Test
-    @SneakyThrows
-    public void create_WhenBookingHasStartNull_StatusIsBadRequest_DoesNotInvokeService() {
-
-
-        //create valid end time
-        LocalDateTime futureEnd = LocalDateTime.of(2024, 2, 1, 1, 1, 1);
-
-
-        // create invalid input booking: BookingDto
-        BookingRequestDto invalidBooking = BookingRequestDto.builder()
-                .start(null)
-                .end(futureEnd)
-                .build();
-
-        // map booking into string
-
-        String invalidBookingString = objectMapper.writeValueAsString(invalidBooking);
-
-        //perform tested request and check status
-        mockMvc.perform(post("/bookings")
-                        .header(header, userId)
-                        .contentType(jsonType)
-                        .content(invalidBookingString))
-                .andExpect(status().isBadRequest());
-
-        // verify invokes
-        verify(bookingService, Mockito.never()).create(userId, invalidBooking);
-    }
-
-    @Test
-    @SneakyThrows
-    public void create_WhenBookingHasEndNull_StatusIsBadRequest_DoesNotInvokeService() {
-
-        //create valid start time
-        LocalDateTime futureStart = LocalDateTime.of(2024, 2, 1, 1, 1, 1);
-
-        // create invalid input booking: BookingDto
-        BookingRequestDto invalidBooking = BookingRequestDto.builder()
-                .start(futureStart)
-                .end(null)
-                .build();
-
-        // map booking into string
-        String invalidBookingString = objectMapper.writeValueAsString(invalidBooking);
-
-        //perform tested request and check status
-        mockMvc.perform(post("/bookings")
-                        .header(header, userId)
-                        .contentType(jsonType)
-                        .content(invalidBookingString))
-                .andExpect(status().isBadRequest());
-
-        // verify invokes
-        verify(bookingService, Mockito.never()).create(userId, invalidBooking);
-    }
-
     @SneakyThrows
     @Test
     public void getById_StatusIsOk_InvokeService() {
@@ -433,7 +316,6 @@ public class BookingControllerTest {
 
     }
 
-
     @Test
     @SneakyThrows
     public void getListByOwner_WhenParametersAreValid_IsStatusOk_AndInvokeService() {
@@ -502,88 +384,6 @@ public class BookingControllerTest {
         assertEquals(result, expectedBookingsListString);
     }
 
-
-    @Test
-    @SneakyThrows
-    public void getListByOwner_WhenFromIsNegative_IsStatusBadRequest_DoesNotInvokeService() {
-
-        //create invalid parameter
-        Integer paramFromValue = -1;
-
-        //create valid parameters
-        String paramStateName = "state";
-        String paramStateValue = "APPROVED";
-        String paramFromName = "from";
-        String paramSizeName = "size";
-        Integer paramSizeValue = 10;
-
-        //perform tested request and check status
-        mockMvc.perform(get("/bookings/owner")
-                        .header(header, userId)
-                        .param(paramStateName, paramStateValue)
-                        .param(paramFromName, String.valueOf(paramFromValue))
-                        .param(paramSizeName, String.valueOf(paramSizeValue)))
-                .andExpect(status().isBadRequest());
-
-        // verify invokes
-        verify(bookingService, never()).getListByOwner(anyLong(), anyString(), anyInt(), anyInt());
-
-    }
-
-    @Test
-    @SneakyThrows
-    public void getListByOwner_WhenSizeIsNegative_IsStatusBadRequest_DoesNotInvokeService() {
-
-        //create invalid parameter
-        Integer paramSizeValue = -1;
-
-        //create valid parameters
-        String paramStateName = "state";
-        String paramStateValue = "APPROVED";
-        String paramFromName = "from";
-        Integer paramFromValue = 10;
-        String paramSizeName = "size";
-
-        //perform tested request and check status
-
-        mockMvc.perform(get("/bookings/owner")
-                        .header(header, userId)
-                        .param(paramStateName, paramStateValue)
-                        .param(paramFromName, String.valueOf(paramFromValue))
-                        .param(paramSizeName, String.valueOf(paramSizeValue)))
-                .andExpect(status().isBadRequest());
-        // verify invokes
-
-        verify(bookingService, never()).getListByOwner(anyLong(), anyString(), anyInt(), anyInt());
-
-    }
-
-    @Test
-    @SneakyThrows
-   public void getListByOwner_WhenSizeIsZero_IsStatusBadRequest_DoesNotInvokeService() {
-
-        // create invalid parameter
-        Integer paramSizeValue = 0;
-
-        //create valid parameters
-        String paramStateName = "state";
-        String paramStateValue = "APPROVED";
-        String paramFromName = "from";
-        Integer paramFromValue = 10;
-        String paramSizeName = "size";
-
-        //perform tested request and check status
-        mockMvc.perform(get("/bookings/owner")
-                        .header(header, userId)
-                        .param(paramStateName, paramStateValue)
-                        .param(paramFromName, String.valueOf(paramFromValue))
-                        .param(paramSizeName, String.valueOf(paramSizeValue)))
-                .andExpect(status().isBadRequest());
-
-        // verify invokes
-        verify(bookingService, never()).getListByOwner(anyLong(), anyString(), anyInt(), anyInt());
-
-    }
 
     @Test
     @SneakyThrows
@@ -704,85 +504,6 @@ public class BookingControllerTest {
         assertEquals(result, expectedBookingsListString);
     }
 
-    @Test
-    @SneakyThrows
-   public void getListByBooker_WhenFromIsNegative_IsStatusBadRequest_DoesNotInvokeService() {
-
-        // create invalid parameter
-        Integer paramFromValue = -1;
-
-        //create valid parameters
-        String paramStateName = "state";
-        String paramStateValue = "APPROVED";
-        String paramFromName = "from";
-        String paramSizeName = "size";
-        Integer paramSizeValue = 10;
-
-        //perform tested request and check status
-        mockMvc.perform(get("/bookings")
-                        .header(header, userId)
-                        .param(paramStateName, paramStateValue)
-                        .param(paramFromName, String.valueOf(paramFromValue))
-                        .param(paramSizeName, String.valueOf(paramSizeValue)))
-                .andExpect(status().isBadRequest());
-
-        // verify invokes
-        verify(bookingService, never()).getListByBooker(anyLong(), anyString(), anyInt(), anyInt());
-    }
-
-    @Test
-    @SneakyThrows
-    public void getListByBooker_WhenSizeIsNegative_isStatusBadRequest_DoesNotInvokeService() {
-
-        // create invalid parameter
-        Integer paramSizeValue = -1;
-
-        //create valid parameters
-        String paramStateName = "state";
-        String paramStateValue = "APPROVED";
-        String paramFromName = "from";
-        Integer paramFromValue = 10;
-        String paramSizeName = "size";
-
-        //perform tested request and check status
-        mockMvc.perform(get("/bookings")
-                        .header(header, userId)
-                        .param(paramStateName, paramStateValue)
-                        .param(paramFromName, String.valueOf(paramFromValue))
-                        .param(paramSizeName, String.valueOf(paramSizeValue)))
-                .andExpect(status().isBadRequest());
-
-        // verify invokes
-        verify(bookingService, never()).getListByBooker(anyLong(), anyString(), anyInt(), anyInt());
-
-    }
-
-    @Test
-    @SneakyThrows
-   public void getListByBooker_WhenSizeIsZero_IsStatusBadRequest_DoesNotInvokeService() {
-
-        // create invalid parameter
-        Integer paramSizeValue = 0;
-
-        //create valid parameters
-        String paramStateName = "state";
-        String paramStateValue = "APPROVED";
-        String paramFromName = "from";
-        Integer paramFromValue = 10;
-        String paramSizeName = "size";
-
-        //perform tested request and check status
-        mockMvc.perform(get("/bookings")
-                        .header(header, userId)
-                        .param(paramStateName, paramStateValue)
-                        .param(paramFromName, String.valueOf(paramFromValue))
-                        .param(paramSizeName, String.valueOf(paramSizeValue)))
-                .andExpect(status().isBadRequest());
-
-        // verify invokes
-        verify(bookingService, never()).getListByBooker(anyLong(), anyString(), anyInt(), anyInt());
-
-    }
 
     @Test
     @SneakyThrows
@@ -810,6 +531,7 @@ public class BookingControllerTest {
         verify(bookingService, never()).getListByBooker(anyLong(), anyString(), anyInt(), anyInt());
 
     }
+
 
     @Test
     @SneakyThrows

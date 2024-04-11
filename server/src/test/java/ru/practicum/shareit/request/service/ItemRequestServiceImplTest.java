@@ -385,19 +385,22 @@ public class ItemRequestServiceImplTest {
                 expectedItemRequest2, expectedItemRequest3);
 
         //mock repository answer
+
         when(userRepository.existsById(requesterId)).thenReturn(true);
-        when(itemRequestRepository.findAllByRequesterIdOrderByCreatedDesc(requesterId))
+        when(itemRequestRepository.findAllByRequesterIdOrderById(requesterId))
                 .thenReturn(itemRequests);
         when(itemRepository.findAllByRequestIn(itemRequests)).thenReturn(allItems);
 
         //invoke tested method
         List<ItemRequestOutDto> result = itemRequestService.getOwnRequests(requesterId);
 
+
         //verify invoke
         InOrder inOrder = inOrder(userRepository, itemRequestRepository, itemRepository);
         inOrder.verify(userRepository).existsById(requesterId);
-        inOrder.verify(itemRequestRepository).findAllByRequesterIdOrderByCreatedDesc(requesterId);
+        inOrder.verify(itemRequestRepository).findAllByRequesterIdOrderById(requesterId);
         inOrder.verify(itemRepository).findAllByRequestIn(itemRequests);
+
 
         //check result
         assertEquals(result, expectedItemRequests);
@@ -533,7 +536,7 @@ public class ItemRequestServiceImplTest {
         int from = 10;
         int size = 10;
 
-        PageRequest page = PageRequest.of(from / size, size, Sort.by(Sort.Direction.DESC, "created"));
+        PageRequest page = PageRequest.of(from / size, size, Sort.by(Sort.Direction.ASC, "id"));
 
         //mock repository answers
         when(userRepository.existsById(ownerId)).thenReturn(true);

@@ -1,6 +1,5 @@
 package ru.practicum.shareit.item.repository;
 
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -119,6 +118,7 @@ public class ItemRepositoryTest {
     @Test
     public void findAllByRequestId() {
 
+
         List<Item> result2 = itemRepository.findAllByRequestId(item2RequestId);
 
         assertThat(result2).asList()
@@ -133,6 +133,7 @@ public class ItemRepositoryTest {
                 .contains(item1)
                 .doesNotContain(item2);
 
+
     }
 
     @Test
@@ -146,13 +147,5 @@ public class ItemRepositoryTest {
                 .hasSize(2)
                 .contains(item1)
                 .contains(item2);
-
-    }
-
-    @AfterEach
-    public void afterEach() {
-        userRepository.deleteAll();
-        itemRepository.deleteAll();
-        itemRequestRepository.deleteAll();
     }
 }

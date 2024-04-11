@@ -33,10 +33,10 @@ public class Item {
     private String description;
     @Column(name = "available", nullable = false)
     private Boolean available;
-    @ManyToOne
+    @ManyToOne()
     @JoinColumn(name = "owner_id", referencedColumnName = "id", nullable = false)
     private User owner;
-    @ManyToOne
-    @JoinColumn(name = "request_id", referencedColumnName = "id", nullable = true)
+    @ManyToOne()
+    @JoinColumn(name = "request_id", referencedColumnName = "id")
     ItemRequest request;
 }

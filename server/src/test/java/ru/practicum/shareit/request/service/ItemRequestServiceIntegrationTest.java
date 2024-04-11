@@ -193,21 +193,22 @@ public class ItemRequestServiceIntegrationTest {
         assertThat(result).asList().hasSize(3);
 
         assertEquals(result.get(0).getItems().size(), 1);
-        assertEquals(result.get(0).getDescription(), "I want to fly, I need jet");
-        assertEquals(result.get(0).getItems().get(0).getName(), "jet");
-        assertEquals(result.get(0).getItems().get(0).getDescription(), "superJet");
+        assertEquals(result.get(0).getDescription(), "I would like to book bike");
+        assertEquals(result.get(0).getItems().get(0).getName(), "bike");
+        assertEquals(result.get(0).getItems().get(0).getDescription(), "new");
         assertEquals(result.get(0).getItems().get(0).getAvailable(), true);
+
         assertEquals(result.get(1).getItems().size(), 1);
         assertEquals(result.get(1).getDescription(), "I need jet");
         assertEquals(result.get(1).getItems().get(0).getName(), "bike");
         assertEquals(result.get(1).getItems().get(0).getDescription(), "old");
         assertEquals(result.get(1).getItems().get(0).getAvailable(), true);
-        assertEquals(result.get(2).getItems().size(), 1);
-        assertEquals(result.get(2).getDescription(), "I would like to book bike");
-        assertEquals(result.get(2).getItems().get(0).getName(), "bike");
-        assertEquals(result.get(2).getItems().get(0).getDescription(), "new");
-        assertEquals(result.get(2).getItems().get(0).getAvailable(), true);
 
+        assertEquals(result.get(2).getItems().size(), 1);
+        assertEquals(result.get(2).getDescription(), "I want to fly, I need jet");
+        assertEquals(result.get(2).getItems().get(0).getName(), "jet");
+        assertEquals(result.get(2).getItems().get(0).getDescription(), "superJet");
+        assertEquals(result.get(2).getItems().get(0).getAvailable(), true);
     }
 
     @Test

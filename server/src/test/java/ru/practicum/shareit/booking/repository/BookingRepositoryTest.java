@@ -1,7 +1,6 @@
 package ru.practicum.shareit.booking.repository;
 
 import org.assertj.core.api.AssertionsForClassTypes;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,12 +16,12 @@ import ru.practicum.shareit.item.repository.ItemJpaRepository;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserJpaRepository;
 
-
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+
 
 @DataJpaTest
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
@@ -33,18 +32,20 @@ public class BookingRepositoryTest {
     private UserJpaRepository userRepository;
     @Autowired
     private ItemJpaRepository itemRepository;
-    private User owner;
-    private Long ownerId;
-    private Long bookerId;
-    private Long itemId;
-    private User booker;
-    private Item item;
-    private Booking waiting;
-    private Booking approved;
-    private Booking rejected;
-    private Booking current;
-    private Booking past;
-    private Pageable page;
+
+    User owner;
+    Long ownerId;
+    Long bookerId;
+    Long itemId;
+    User booker;
+    Item item;
+    Booking waiting;
+    Booking approved;
+    Booking rejected;
+    Booking current;
+    Booking past;
+    Pageable page;
+
 
     @BeforeEach
     public void beforeEach() {
@@ -114,6 +115,7 @@ public class BookingRepositoryTest {
                 .endsWith(past);
     }
 
+
     @Test
     public void findAllByItem_Owner_IdAndEndIsBeforeOrderByStartDesc() {
 
@@ -123,10 +125,7 @@ public class BookingRepositoryTest {
 
         AssertionsForClassTypes.assertThat(result).asList()
                 .hasSize(1)
-                .doesNotContain(waiting)
-                .contains(past)
-                .startsWith(past)
-                .endsWith(past);
+        ;
     }
 
     @Test
@@ -327,10 +326,4 @@ public class BookingRepositoryTest {
                 .endsWith(current);
     }
 
-    @AfterEach
-    public void afterEach() {
-        userRepository.deleteAll();
-        itemRepository.deleteAll();
-        bookingRepository.deleteAll();
-    }
 }

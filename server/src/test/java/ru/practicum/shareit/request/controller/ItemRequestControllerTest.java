@@ -98,40 +98,6 @@ public class ItemRequestControllerTest {
 
     @Test
     @SneakyThrows
-    void create_WhenItemRequestHasEmptyDescription_StatusIsBadRequest_DoesNotInvokeService() {
-
-        ItemRequestDto invalidItemRequest = ItemRequestDto.builder()
-                .description("").build();
-        String invalidItemRequestString = objectMapper.writeValueAsString(invalidItemRequest);
-
-        mockMvc.perform(post("/requests")
-                        .header(header, userId)
-                        .contentType(jsonType)
-                        .content(invalidItemRequestString))
-                .andExpect(status().isBadRequest());
-
-        verify(itemRequestService, Mockito.never()).create(anyLong(), any());
-    }
-
-    @Test
-    @SneakyThrows
-    void create_WhenItemRequestHasNullDescription_StatusIsBadRequest_DoesNotInvokeService() {
-
-        ItemRequestDto invalidItemRequest = ItemRequestDto.builder()
-                .description(null).build();
-        String invalidItemRequestString = objectMapper.writeValueAsString(invalidItemRequest);
-
-        mockMvc.perform(post("/requests")
-                        .header(header, userId)
-                        .contentType(jsonType)
-                        .content(invalidItemRequestString))
-                .andExpect(status().isBadRequest());
-
-        verify(itemRequestService, Mockito.never()).create(anyLong(), any());
-    }
-
-    @Test
-    @SneakyThrows
     void getOwnRequests_IsStatusOk_AndInvokeService() {
 
         User user = User.builder().name("CustomerName").build();
@@ -203,59 +169,6 @@ public class ItemRequestControllerTest {
         assertEquals(result, requestsListString);
     }
 
-    @Test
-    @SneakyThrows
-    void getOtherUsersRequests_WhenFromIsNegative_IsStatusBadRequest_DoesNotInvokeService() {
-
-        String paramFromName = "from";
-        Integer paramFromValue = -1;
-        String paramSizeName = "size";
-        Integer paramSizeValue = 10;
-
-        mockMvc.perform(get("/requests/all")
-                        .header(header, userId)
-                        .param(paramFromName, String.valueOf(paramFromValue))
-                        .param(paramSizeName, String.valueOf(paramSizeValue)))
-                .andExpect(status().isBadRequest());
-
-        verify(itemRequestService, never()).getOtherUsersRequests(anyLong(), anyInt(), anyInt());
-    }
-
-    @Test
-    @SneakyThrows
-    void getOtherUsersRequests_WhenSizeIsNegative_IsStatusBadRequest_DoesNotInvokeService() {
-
-        String paramFromName = "from";
-        Integer paramFromValue = 0;
-        String paramSizeName = "size";
-        Integer paramSizeValue = -1;
-
-        mockMvc.perform(get("/requests/all")
-                        .header(header, userId)
-                        .param(paramFromName, String.valueOf(paramFromValue))
-                        .param(paramSizeName, String.valueOf(paramSizeValue)))
-                .andExpect(status().isBadRequest());
-
-        verify(itemRequestService, never()).getOtherUsersRequests(anyLong(), anyInt(), anyInt());
-    }
-
-    @Test
-    @SneakyThrows
-    void getOtherUsersRequests_WhenSizeIsZero_IsStatusBadRequest_AndDoesNotInvokeService() {
-
-        String paramFromName = "from";
-        Integer paramFromValue = 0;
-        String paramSizeName = "size";
-        Integer paramSizeValue = 0;
-
-        mockMvc.perform(get("/requests/all")
-                        .header(header, userId)
-                        .param(paramFromName, String.valueOf(paramFromValue))
-                        .param(paramSizeName, String.valueOf(paramSizeValue)))
-                .andExpect(status().isBadRequest());
-
-        verify(itemRequestService, never()).getOtherUsersRequests(anyLong(), anyInt(), anyInt());
-    }
 
     @Test
     @SneakyThrows
