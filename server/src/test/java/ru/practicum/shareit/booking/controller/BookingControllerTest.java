@@ -11,7 +11,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import ru.practicum.shareit.booking.controller.BookingController;
 
 import ru.practicum.shareit.booking.dto.BookingRequestDto;
 import ru.practicum.shareit.booking.dto.BookingResponseDto;
@@ -103,9 +102,9 @@ public class BookingControllerTest {
 
         //perform tested request and check status and content
         String result = mockMvc.perform(post("/bookings")
-                        .header(header, userId)
-                        .contentType(jsonType)
-                        .content(bookingInString))
+                .header(header, userId)
+                .contentType(jsonType)
+                .content(bookingInString))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.start", is(bookingOut.getStart().toString()), LocalDateTime.class))
                 .andExpect(jsonPath("$.end", is(bookingOut.getEnd().toString()), LocalDateTime.class))
@@ -164,7 +163,7 @@ public class BookingControllerTest {
 
         //perform tested request and check status and content
         String result = mockMvc.perform(get("/bookings/{id}", bookingId)
-                        .header(header, userId))
+                .header(header, userId))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(jsonType))
                 .andExpect(content().json(expectedBookingString))
@@ -223,10 +222,10 @@ public class BookingControllerTest {
 
         //perform tested request and check status and content
         String result = mockMvc.perform(patch("/bookings/{bookingId}", bookingId)
-                        .header(header, userId)
-                        .param(paramName, String.valueOf(paramValue))
-                        .contentType(jsonType)
-                        .content(bookingInString))
+                .header(header, userId)
+                .param(paramName, String.valueOf(paramValue))
+                .contentType(jsonType)
+                .content(bookingInString))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id", is(bookingOut.getId()), Long.class))
                 .andExpect(jsonPath("$.start", is(bookingOut.getStart().toString())))
@@ -247,7 +246,7 @@ public class BookingControllerTest {
 
     @Test
     @SneakyThrows
-   public void update_WhenParamHasInvalidName_StatusIsInternalServerError_DoesNotInvokeService() {
+    public void update_WhenParamHasInvalidName_StatusIsInternalServerError_DoesNotInvokeService() {
 
         // create invalid parameter name
         String paramName = "notValidName";
@@ -269,10 +268,10 @@ public class BookingControllerTest {
 
         //perform tested request and check status
         mockMvc.perform(patch("/bookings/{bookingId}", bookingId)
-                        .header(header, userId)
-                        .param(paramName, String.valueOf(paramValue))
-                        .contentType(jsonType)
-                        .content(bookingInString))
+                .header(header, userId)
+                .param(paramName, String.valueOf(paramValue))
+                .contentType(jsonType)
+                .content(bookingInString))
                 .andExpect(status().isInternalServerError());
 
         // verify invokes
@@ -305,10 +304,10 @@ public class BookingControllerTest {
         //perform tested request and check status
 
         mockMvc.perform(patch("/bookings/{bookingId}", bookingId)
-                        .header(header, userId)
-                        .param(paramName, paramValue)
-                        .contentType(jsonType)
-                        .content(bookingInString))
+                .header(header, userId)
+                .param(paramName, paramValue)
+                .contentType(jsonType)
+                .content(bookingInString))
                 .andExpect(status().isInternalServerError());
         // verify invokes
 
@@ -359,10 +358,10 @@ public class BookingControllerTest {
 
         //perform tested request and check status and content
         String result = mockMvc.perform(get("/bookings/owner")
-                        .header(header, userId)
-                        .param(paramStateName, paramStateValue)
-                        .param(paramFromName, String.valueOf(paramFromValue))
-                        .param(paramSizeName, String.valueOf(paramSizeValue)))
+                .header(header, userId)
+                .param(paramStateName, paramStateValue)
+                .param(paramFromName, String.valueOf(paramFromValue))
+                .param(paramSizeName, String.valueOf(paramSizeValue)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(2)))
                 .andExpect(jsonPath("$.[0].id", is(booking1.getId()), Long.class))
@@ -401,10 +400,10 @@ public class BookingControllerTest {
 
         //perform tested request and check status
         mockMvc.perform(get("/bookings/owner")
-                        .header(header, userId)
-                        .param(paramStateName, paramStateValue)
-                        .param(paramFromName, paramFromValue)
-                        .param(paramSizeName, String.valueOf(paramSizeValue)))
+                .header(header, userId)
+                .param(paramStateName, paramStateValue)
+                .param(paramFromName, paramFromValue)
+                .param(paramSizeName, String.valueOf(paramSizeValue)))
                 .andExpect(status().isInternalServerError());
 
         // verify invokes
@@ -427,10 +426,10 @@ public class BookingControllerTest {
 
         //perform tested request and check status
         mockMvc.perform(get("/bookings/owner")
-                        .header(header, userId)
-                        .param(paramStateName, paramStateValue)
-                        .param(paramFromName, String.valueOf(paramFromValue))
-                        .param(paramSizeName, paramSizeValue))
+                .header(header, userId)
+                .param(paramStateName, paramStateValue)
+                .param(paramFromName, String.valueOf(paramFromValue))
+                .param(paramSizeName, paramSizeValue))
                 .andExpect(status().isInternalServerError());
 
         // verify invokes
@@ -481,10 +480,10 @@ public class BookingControllerTest {
 
         //perform tested request and check status and content
         String result = mockMvc.perform(get("/bookings")
-                        .header(header, userId)
-                        .param(paramStateName, paramStateValue)
-                        .param(paramFromName, String.valueOf(paramFromValue))
-                        .param(paramSizeName, String.valueOf(paramSizeValue)))
+                .header(header, userId)
+                .param(paramStateName, paramStateValue)
+                .param(paramFromName, String.valueOf(paramFromValue))
+                .param(paramSizeName, String.valueOf(paramSizeValue)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(2)))
                 .andExpect(jsonPath("$.[0].id", is(booking1.getId()), Long.class))
@@ -507,7 +506,7 @@ public class BookingControllerTest {
 
     @Test
     @SneakyThrows
-   public void getListByBooker_WhenFromIsNotNumber_IsStatusInternalServerError_DoesNotInvokeService() {
+    public void getListByBooker_WhenFromIsNotNumber_IsStatusInternalServerError_DoesNotInvokeService() {
 
         // create invalid parameter
         String paramFromValue = "from";
@@ -521,10 +520,10 @@ public class BookingControllerTest {
 
         //perform tested request and check status
         mockMvc.perform(get("/bookings")
-                        .header(header, userId)
-                        .param(paramStateName, paramStateValue)
-                        .param(paramFromName, paramFromValue)
-                        .param(paramSizeName, String.valueOf(paramSizeValue)))
+                .header(header, userId)
+                .param(paramStateName, paramStateValue)
+                .param(paramFromName, paramFromValue)
+                .param(paramSizeName, String.valueOf(paramSizeValue)))
                 .andExpect(status().isInternalServerError());
 
         // verify invokes
@@ -549,10 +548,10 @@ public class BookingControllerTest {
 
         //perform tested request and check status
         mockMvc.perform(get("/bookings")
-                        .header(header, userId)
-                        .param(paramStateName, paramStateValue)
-                        .param(paramFromName, String.valueOf(paramFromValue))
-                        .param(paramSizeName, paramSizeValue))
+                .header(header, userId)
+                .param(paramStateName, paramStateValue)
+                .param(paramFromName, String.valueOf(paramFromValue))
+                .param(paramSizeName, paramSizeValue))
                 .andExpect(status().isInternalServerError());
 
         // verify invokes

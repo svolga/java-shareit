@@ -21,7 +21,6 @@ import ru.practicum.shareit.item.repository.ItemJpaRepository;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserJpaRepository;
 import ru.practicum.shareit.util.exceptions.AccessIsNotAllowedException;
-import ru.practicum.shareit.util.exceptions.DateTimeException;
 import ru.practicum.shareit.util.exceptions.ObjectNotFoundException;
 import ru.practicum.shareit.util.exceptions.UnavailableItemException;
 import ru.practicum.shareit.util.exceptions.UnsupportedStatusException;

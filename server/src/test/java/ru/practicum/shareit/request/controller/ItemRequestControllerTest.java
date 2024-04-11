@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -24,7 +23,6 @@ import java.util.List;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.never;
@@ -80,9 +78,9 @@ public class ItemRequestControllerTest {
         when(itemRequestService.create(userId, validItemRequest)).thenReturn(itemRequest);
 
         String result = mockMvc.perform(post("/requests")
-                        .header(header, userId)
-                        .contentType(jsonType)
-                        .content(validItemRequestString))
+                .header(header, userId)
+                .contentType(jsonType)
+                .content(validItemRequestString))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id", is(itemRequest.getId()), Long.class))
                 .andExpect(jsonPath("$.description", is(itemRequest.getDescription())))
@@ -115,7 +113,7 @@ public class ItemRequestControllerTest {
         when(itemRequestService.getOwnRequests(userId)).thenReturn(requests);
 
         String result = mockMvc.perform(get("/requests")
-                        .header(header, userId))
+                .header(header, userId))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(1)))
                 .andExpect(jsonPath("$.[0].id", is(itemRequest.getId()), Long.class))
@@ -153,9 +151,9 @@ public class ItemRequestControllerTest {
         when(itemRequestService.getOtherUsersRequests(userId, paramFromValue, paramSizeValue)).thenReturn(requests);
 
         String result = mockMvc.perform(get("/requests/all")
-                        .header(header, userId)
-                        .param(paramFromName, String.valueOf(paramFromValue))
-                        .param(paramSizeName, String.valueOf(paramSizeValue)))
+                .header(header, userId)
+                .param(paramFromName, String.valueOf(paramFromValue))
+                .param(paramSizeName, String.valueOf(paramSizeValue)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(1)))
                 .andExpect(jsonPath("$.[0].id", is(itemRequest.getId()), Long.class))
@@ -180,9 +178,9 @@ public class ItemRequestControllerTest {
         Integer paramSizeValue = 10;
 
         mockMvc.perform(get("/requests/all")
-                        .header(header, userId)
-                        .param(paramFromName, paramFromValue)
-                        .param(paramSizeName, String.valueOf(paramSizeValue)))
+                .header(header, userId)
+                .param(paramFromName, paramFromValue)
+                .param(paramSizeName, String.valueOf(paramSizeValue)))
                 .andExpect(status().isInternalServerError());
 
         verify(itemRequestService, never()).getOtherUsersRequests(anyLong(), anyInt(), anyInt());
@@ -199,9 +197,9 @@ public class ItemRequestControllerTest {
         String paramSizeValue = "size";
 
         mockMvc.perform(get("/requests/all")
-                        .header(header, userId)
-                        .param(paramFromName, paramFromValue)
-                        .param(paramSizeName, paramSizeValue))
+                .header(header, userId)
+                .param(paramFromName, paramFromValue)
+                .param(paramSizeName, paramSizeValue))
                 .andExpect(status().isInternalServerError());
 
         verify(itemRequestService, never()).getOtherUsersRequests(anyLong(), anyInt(), anyInt());
@@ -224,7 +222,7 @@ public class ItemRequestControllerTest {
         when(itemRequestService.getRequestById(userId, requestId)).thenReturn(itemRequest);
 
         String result = mockMvc.perform(get("/requests/{requestId}", itemRequestId)
-                        .header(header, userId))
+                .header(header, userId))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(jsonType))
                 .andExpect(content().json(itemRequestString))

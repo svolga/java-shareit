@@ -11,11 +11,11 @@ import ru.practicum.shareit.item.service.ItemService;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.service.UserService;
 import ru.practicum.shareit.util.exceptions.AccessIsNotAllowedException;
-import ru.practicum.shareit.util.exceptions.DateTimeException;
 import ru.practicum.shareit.util.exceptions.ObjectNotFoundException;
 import ru.practicum.shareit.util.exceptions.UnsupportedStatusException;
 
 import java.time.LocalDateTime;
+
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @SpringBootTest
