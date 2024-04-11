@@ -25,8 +25,6 @@ import java.util.stream.Collectors;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -87,9 +85,9 @@ public class ItemControllerTest {
 
         //perform request and check status and content
         String result = mockMvc.perform(post("/items")
-                        .header(header, userId)
-                        .contentType(jsonType)
-                        .content(expectedItemString))
+                .header(header, userId)
+                .contentType(jsonType)
+                .content(expectedItemString))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id", is(validItem.getId()), Long.class))
                 .andExpect(jsonPath("$.name", is(validItem.getName())))
@@ -129,7 +127,7 @@ public class ItemControllerTest {
 
         //perform request and check status and content
         String result = mockMvc.perform(get("/items/{itemId}", itemId)
-                        .header(header, userId))
+                .header(header, userId))
                 .andExpect(status().isOk())
                 .andExpect(content().json(expectedItemString))
                 .andReturn()
@@ -164,9 +162,9 @@ public class ItemControllerTest {
 
         //perform request and check status and content
         String result = mockMvc.perform(patch("/items/{itemId}", itemId)
-                        .header(header, userId)
-                        .contentType(jsonType)
-                        .content(expectedItemString))
+                .header(header, userId)
+                .contentType(jsonType)
+                .content(expectedItemString))
                 .andExpect(status().isOk())
                 .andReturn()
                 .getResponse()
@@ -224,7 +222,7 @@ public class ItemControllerTest {
 
         //perform request and check status and content
         String result = mockMvc.perform(get("/items")
-                        .header(header, userId))
+                .header(header, userId))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(2)))
                 .andExpect(jsonPath("$.[0].id", is(validItem1.getId()), Long.class))
@@ -277,7 +275,7 @@ public class ItemControllerTest {
 
         //perform request and check status and content
         String result = mockMvc.perform(get("/items/search")
-                        .param(parameterName, parameterValue))
+                .param(parameterName, parameterValue))
                 .andExpect(status().isOk())
                 .andExpect(content().json(itemsString))
                 .andExpect(jsonPath("$", hasSize(2)))
@@ -327,7 +325,7 @@ public class ItemControllerTest {
 
         //perform request and check status
         mockMvc.perform(get("/items/search")
-                        .param(parameterName, parameterValue))
+                .param(parameterName, parameterValue))
                 .andExpect(status().isInternalServerError());
 
         // verify invokes
@@ -355,9 +353,9 @@ public class ItemControllerTest {
 
         //perform request and check status and content
         String result = mockMvc.perform(post("/items/{itemId}/comment", itemId)
-                        .header(header, userId)
-                        .content(objectMapper.writeValueAsString(comment))
-                        .contentType(jsonType))
+                .header(header, userId)
+                .content(objectMapper.writeValueAsString(comment))
+                .contentType(jsonType))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id", is(commentOut.getId()), Long.class))
                 .andExpect(jsonPath("$.text", is(commentOut.getText())))
