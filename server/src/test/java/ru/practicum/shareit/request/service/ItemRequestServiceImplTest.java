@@ -387,7 +387,7 @@ public class ItemRequestServiceImplTest {
         //mock repository answer
 
         when(userRepository.existsById(requesterId)).thenReturn(true);
-        when(itemRequestRepository.findAllByRequesterIdOrderById(requesterId))
+        when(itemRequestRepository.findAllByRequesterId(requesterId))
                 .thenReturn(itemRequests);
         when(itemRepository.findAllByRequestIn(itemRequests)).thenReturn(allItems);
 
@@ -398,7 +398,7 @@ public class ItemRequestServiceImplTest {
         //verify invoke
         InOrder inOrder = inOrder(userRepository, itemRequestRepository, itemRepository);
         inOrder.verify(userRepository).existsById(requesterId);
-        inOrder.verify(itemRequestRepository).findAllByRequesterIdOrderById(requesterId);
+        inOrder.verify(itemRequestRepository).findAllByRequesterId(requesterId);
         inOrder.verify(itemRepository).findAllByRequestIn(itemRequests);
 
 
