@@ -48,7 +48,8 @@ public class ItemRequestServiceImpl implements ItemRequestService {
     @Transactional(readOnly = true)
     public List<ItemRequestOutDto> getOwnRequests(Long userId) {
         checkUserExists(userId);
-        List<ItemRequest> itemRequests = itemRequestRepository.findAllByRequesterIdOrderById(userId);
+        List<ItemRequest> itemRequests = itemRequestRepository.findAllByRequesterId(userId);
+
         Map<ItemRequest, List<ItemDto>> map = getAllItemsForListRequests(itemRequests);
 
         List<ItemRequestOutDto> requests = itemRequests.stream()
